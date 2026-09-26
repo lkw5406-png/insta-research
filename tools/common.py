@@ -12,11 +12,12 @@ DATA_DIR = ROOT / "data"
 TMP_DIR = ROOT / ".tmp"
 INBOX_DIR = ROOT / "inbox"          # 사장님이 캡처를 넣는 곳 (저장소에 안 올라감). 목록별 하위 폴더 3개
 # 리서치 보드 목록 (2026-09-27 사장님: 사이트를 'LKW 리서치 보드'로, 인스타그램·핀터레스트·런웨이 3목록)
-# 키 = 판정표·사이트에 쓰는 id, folder = inbox/ 아래 폴더 이름(사장님이 보는 이름)
+# 키 = 판정표·사이트에 쓰는 id, folder = inbox/ 아래 폴더 이름(사장님이 보는 이름),
+# prefix = 사진 번호 앞글자 (IG-0001 — 사이트 사진과 inbox 파일 이름에 같은 번호)
 BOARDS = {
-    "instagram": {"name": "인스타그램", "folder": "인스타그램", "source_label": "출처 계정"},
-    "pinterest": {"name": "핀터레스트", "folder": "핀터레스트", "source_label": "핀 올린 계정"},
-    "runway": {"name": "런웨이", "folder": "런웨이", "source_label": "브랜드·시즌"},
+    "instagram": {"prefix": "IG", "name": "인스타그램", "folder": "인스타그램", "source_label": "출처 계정"},
+    "pinterest": {"prefix": "PT", "name": "핀터레스트", "folder": "핀터레스트", "source_label": "핀 올린 계정"},
+    "runway": {"prefix": "RW", "name": "런웨이", "folder": "런웨이", "source_label": "브랜드·시즌"},
 }
 PHOTOS_DIR = ROOT / "photos"        # 패션 사진만 잘라 낸 결과 (저장소에 안 올라감)
 REPORT_DIR = ROOT / "report"        # 비공개 리포트 (저장소에 안 올라감)

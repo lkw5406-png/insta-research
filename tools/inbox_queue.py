@@ -20,11 +20,18 @@ Claude가 쓴 판정(패션 여부·출처 계정·자르기 범위·키워드)�
   python tools/inbox_queue.py --next [--size 30]    새 스크린샷 → .tmp/queue.json + .tmp/sheet_N.jpg
   python tools/inbox_queue.py --merge .tmp/batchN.json   검사 후 합치기 + 사진 자르기
   python tools/inbox_queue.py --check [--review 12]     남은 개수 (+ 최근 자른 사진 모음 .tmp/review.jpg)
+  python tools/inbox_queue.py --codes                    번호 없는 판정에 번호 붙이기 (--merge 때 자동. 손으로 고친 뒤 다시 맞출 때)
+
+사진 번호 (2026-09-27 사장님 요청: 사이트 사진과 inbox 파일을 찾기 쉽게 같은 이름으로):
+  목록별 번호 IG-0001 / PT-0001 / RW-0001. 합칠 때 자동으로
+  inbox 파일 → "IG-0001_출처.png", 잘라 낸 사진 → photos/…/IG-0001.jpg (한 캡처에 여러 장이면 IG-0001_2.jpg),
+  사이트 공개본 → docs/img/IG-0001.jpg. 사이트 카드·크게 보기에 번호가 보임. 같은 사진 중복 캡처는 "IG-0001_중복_xxxx.png".
 """
 from __future__ import annotations
 
 import argparse
 import hashlib
+import re
 import sys
 from pathlib import Path
 
@@ -258,9 +265,65 @@ def cmd_merge(path: str) -> int:
             n_photo += len(out)
         labels[fid] = rec
     save_json(LABELS_PATH, labels)
+    assign_codes()
     fashion = sum(1 for l in batch.values() if l["fashion"])
     print(f"합침: {len(batch)}장 (패션 {fashion}장 → 사진 {n_photo}개 저장, 패션 아님 {len(batch) - fashion}장)")
     return 0
+
+
+# ---------- 번호 붙이기 ----------
+def safe_name(text: str) -> str:
+    t = re.sub(r'[\\/:*?"<>|\s]+', "_", (text or "").lstrip("@")).strip("._")
+    return t[:40] or "출처확인불가"
+
+
+def rename(src: Path, dst: Path) -> Path:
+    if src == dst or not src.exists():
+        return src
+    if dst.exists():  # 이미 같은 이름이 있으면 건드리지 않음
+        print(f"  이름 겹침 — 그대로 둠: {src.name} → {dst.name}")
+        return src
+    src.rename(dst)
+    return dst
+
+
+def assign_codes() -> int:
+    """번호 없는 판정에 목록별 다음 번호를 붙이고, inbox 파일·잘라 낸 사진 이름을 번호로 바꿈 (여러 번 돌려도 안전)."""
+    labels = load_json(LABELS_PATH, {})
+    paths = {file_id(p): p for p in inbox_files()}
+    order = {fid: k for k, fid in enumerate(paths)}  # 파일 넣은 순서
+    used: dict[str, int] = {}
+    for l in labels.values():
+        m = re.fullmatch(r"([A-Z]{2})-(\d+)", l.get("code", ""))
+        if m:
+            used[m[1]] = max(used.get(m[1], 0), int(m[2]))
+    todo = sorted((fid for fid, l in labels.items() if "code" not in l and "dup_of" not in l),
+                  key=lambda f: (labels[f].get("added", ""), order.get(f, 10**9)))
+    for fid in todo:
+        l = labels[fid]
+        pre = BOARDS[l.get("board", "instagram")]["prefix"]
+        used[pre] = used.get(pre, 0) + 1
+        code = l["code"] = f"{pre}-{used[pre]:04d}"
+        if fid in paths:
+            p = paths[fid]
+            label = ("출처확인불가" if l.get("source") == "확인 불가" else l.get("source", "")) if l.get("fashion") else "패션아님"
+            l["file"] = rename(p, p.with_name(f"{code}_{safe_name(label)}{p.suffix.lower()}")).name
+        new_photos = []
+        for k, ph in enumerate(l.get("photos", [])):
+            old = ROOT / ph
+            new = old.with_name(f"{code}{'' if k == 0 else f'_{k + 1}'}.jpg")
+            new_photos.append(rename(old, new).relative_to(ROOT).as_posix())
+        if new_photos:
+            l["photos"] = new_photos
+    for fid, l in labels.items():  # 중복 캡처는 원본 번호를 따라감
+        twin = labels.get(l.get("dup_of", ""), {})
+        if twin.get("code") and fid in paths and not paths[fid].name.startswith(twin["code"]):
+            p = paths[fid]
+            l["file"] = rename(p, p.with_name(f"{twin['code']}_중복_{fid[:4]}{p.suffix.lower()}")).name
+    save_json(LABELS_PATH, labels)
+    if todo:
+        print(f"번호 붙임: {len(todo)}장 ({todo and labels[todo[0]]['code']} ~ {todo and labels[todo[-1]]['code']})")
+    return len(todo)
 
 
 # ---------- --check ----------
@@ -295,6 +358,7 @@ def main() -> int:
     g.add_argument("--next", action="store_true")
     g.add_argument("--merge")
     g.add_argument("--check", action="store_true")
+    g.add_argument("--codes", action="store_true")
     ap.add_argument("--size", type=int, default=30)
     ap.add_argument("--review", type=int, default=0)
     a = ap.parse_args()
@@ -307,6 +371,9 @@ def main() -> int:
         cmd_next(a.size)
     elif a.merge:
         return cmd_merge(a.merge)
+    elif a.codes:
+        n = assign_codes()
+        print(f"번호 없는 판정 {n}장 처리")
     else:
         cmd_check(a.review)
     return 0

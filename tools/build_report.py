@@ -45,7 +45,8 @@ def rows(publish: bool) -> list[dict]:
         for k, p in enumerate(l.get("photos", [])):
             src = small_copy(ROOT / p, keep) if publish else "../" + p
             big = small_copy(ROOT / p, keep, "big", ZOOM_MAX) if publish else "../" + p
-            out.append({"id": f"{fid}_{k}", "b": l.get("board", "instagram"), "src": src, "big": big,
+            code = l.get("code", "") + ("" if k == 0 else f"_{k + 1}")
+            out.append({"id": f"{fid}_{k}", "code": code, "b": l.get("board", "instagram"), "src": src, "big": big,
                         "source": l.get("source", ""), "origin": l.get("origin", ""), "note": l.get("source_note", ""),
                         "g": l["gender"], "sum": l.get("summary", ""), "added": l["added"],
                         **{f: l.get(f, []) for f in FIELDS}})
@@ -53,7 +54,7 @@ def rows(publish: bool) -> list[dict]:
         for old in (DOCS_DIR / "img").rglob("*.jpg"):
             if old.relative_to(DOCS_DIR / "img").as_posix() not in keep:
                 old.unlink()
-    return sorted(out, key=lambda r: (r["added"], r["id"]), reverse=True)
+    return sorted(out, key=lambda r: (r["added"], r["code"] or r["id"]), reverse=True)
 
 
 def small_copy(path: Path, keep: set, sub: str = "", size: int = PUBLISH_MAX) -> str:
@@ -93,6 +94,9 @@ header p { margin:0; color:var(--ink-2); }
 .pill button { font:inherit; font-weight:700; padding:6px 14px; border:0; border-radius:999px; cursor:pointer;
   background:transparent; color:var(--ink-2); }
 .pill button[aria-pressed="true"] { background:var(--ink); color:var(--page); }
+.search { flex:1 1 220px; max-width:320px; font:inherit; font-size:14px; padding:8px 14px; border-radius:999px;
+  border:1px solid var(--border); background:var(--surface); color:var(--ink); }
+.search:focus { outline:2px solid var(--accent); outline-offset:1px; }
 button:focus-visible, a:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:14px; }
 .stat { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px 14px; }
@@ -122,6 +126,9 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--accent); outline
 .tags span { font-size:12px; padding:2px 8px; border-radius:999px; background:var(--chip); }
 .empty { color:var(--muted); padding:48px 16px; text-align:center; line-height:1.8; column-span:all; }
 .empty b { color:var(--ink); font-size:17px; }
+.item { position:relative; }
+.code { position:absolute; top:8px; left:8px; font:700 12px/1 ui-monospace,Consolas,monospace; color:#fff;
+  background:rgba(0,0,0,.62); padding:5px 7px; border-radius:6px; letter-spacing:.02em; pointer-events:none; }
 .bd { display:inline-block; font-size:11px; font-weight:700; padding:1px 7px; border-radius:6px; margin-right:6px; vertical-align:1px; color:#fff; }
 .bd-instagram { background:#c13584; } .bd-pinterest { background:#e60023; } .bd-runway { background:#3a3a3a; }
 .empty code { background:var(--chip); color:var(--ink); padding:2px 8px; border-radius:6px; }
@@ -157,7 +164,9 @@ function inPeriod(r) {
   return S.p === 'w' ? diff < 7 : diff < 31;
 }
 const inBoard = (r, b) => b === 'all' || r.b === b;
-const base = () => D.rows.filter(r => inBoard(r, S.b) && (S.g === '전체' || r.g === S.g || r.g === '공용') && inPeriod(r));
+const hit = r => { const q = (S.q || '').trim().toLowerCase().replace(/^@/, ''); if (!q) return true;
+  return [r.code, r.source, r.origin, r.sum].some(v => (v || '').toLowerCase().replace(/^@/, '').includes(q)); };
+const base = () => D.rows.filter(r => inBoard(r, S.b) && (S.g === '전체' || r.g === S.g || r.g === '공용') && inPeriod(r) && hit(r));
 const LINK = {instagram: 'https://www.instagram.com/', pinterest: 'https://www.pinterest.com/'};
 function tabs() {
   document.querySelectorAll('[data-b]').forEach(x => {
@@ -207,10 +216,11 @@ function render() {
         : `<span class="src">${esc(r.source)}</span>`;
     const origin = r.origin ? ` <span class="meta">· 원출처 ${esc(r.origin)}</span>` : '';
     const tags = [...r.items, ...r.styles, ...r.colors, ...r.materials, ...r.details].map(t => `<span>${esc(t)}</span>`).join('');
-    return `<figure class="item"><img loading="lazy" src="${r.src}" alt="${esc(r.sum)}" data-big="${r.big}" data-cap="${esc((r.source || '') + ' · ' + r.sum)}">
+    return `<figure class="item">${r.code ? `<span class="code">${esc(r.code)}</span>` : ''}<img loading="lazy" src="${r.src}" alt="${esc(r.sum)}" data-big="${r.big}" data-cap="${esc((r.code ? r.code + ' · ' : '') + (r.source || '') + ' · ' + r.sum)}">
       <div class="body">${S.b === 'all' ? `<span class="bd bd-${r.b}">${esc(D.boards[r.b].name)}</span>` : ''}${src}${origin} <span class="meta">· ${r.g} · ${r.added}</span><p class="sum">${esc(r.sum)}</p><div class="tags">${tags}</div></div></figure>`;
   }).join('') : '<p class="empty">조건에 맞는 사진이 없어요.</p>';
 }
+document.getElementById('q').addEventListener('input', e => { S.q = e.target.value; S.f = null; render(); });
 document.addEventListener('click', e => {
   const b = e.target.closest('button');
   const img = e.target.closest('.item img');
@@ -249,6 +259,7 @@ def page(data: dict) -> str:
 <div class="topbar">
   <div class="pill" role="group" aria-label="성별">{''.join(f'<button data-g="{g}" aria-pressed="{str(g == "전체").lower()}">{g}</button>' for g in ("전체", "여성", "남성"))}</div>
   <div class="pill" role="group" aria-label="기간">{''.join(f'<button data-p="{k}" aria-pressed="{str(k == "all").lower()}">{v}</button>' for k, v in (("all", "전체 기간"), ("w", "최근 7일"), ("m", "최근 30일")))}</div>
+  <input id="q" class="search" type="search" placeholder="번호·계정 검색 (예: IG-0023, fabregat)" aria-label="번호·계정 검색">
 </div>
 <div class="stats" id="stats"></div>
 <div class="facets" id="facets"></div>
