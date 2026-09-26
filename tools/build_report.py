@@ -117,13 +117,16 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--accent); outline
 .tags { display:flex; flex-wrap:wrap; gap:4px; }
 .tags span { font-size:12px; padding:2px 8px; border-radius:999px; background:var(--chip); }
 .empty { color:var(--muted); padding:40px 0; text-align:center; }
-dialog { border:0; padding:0; background:transparent; max-width:98vw; max-height:98vh; overflow:visible; }
-dialog::backdrop { background:rgba(0,0,0,.88); }
-dialog:focus, dialog:focus-visible { outline:none; }
-dialog p { text-align:center; }
-dialog img { display:block; height:90vh; width:auto; max-width:98vw; object-fit:contain; border-radius:8px; cursor:zoom-out; }
-@media (orientation:portrait) { dialog img { height:auto; width:98vw; max-height:88vh; } }
-dialog p { color:#fff; margin:8px 0 0; font-size:14px; }
+/* 사진 크게 보기: 화면 전체 덮개 (2026-09-27 PC에서 사진이 작게·흰 테두리로 보여 전체 화면 방식으로 바꿈) */
+dialog#zoom { position:fixed; inset:0; width:100vw; height:100vh; max-width:none; max-height:none; margin:0; padding:0;
+  border:0; background:rgba(0,0,0,.92); color:#fff; outline:none; overflow:hidden; }
+dialog#zoom[open] { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; }
+dialog#zoom::backdrop { background:rgba(0,0,0,.92); }
+dialog#zoom img { display:block; height:86vh; width:auto; max-width:94vw; object-fit:contain; border-radius:6px; cursor:zoom-out; }
+dialog#zoom p { margin:0; max-width:94vw; font-size:14px; text-align:center; color:#fff; }
+dialog#zoom .x { position:absolute; top:14px; right:18px; font:inherit; font-size:30px; line-height:1; color:#fff;
+  background:rgba(255,255,255,.12); border:0; border-radius:999px; width:44px; height:44px; cursor:pointer; }
+@media (orientation:portrait) { dialog#zoom img { height:auto; width:94vw; max-height:80vh; } }
 @media (max-width:560px) { .facet { flex-direction:column; gap:4px; } .facet > span { width:auto; padding:0; } }
 """
 
@@ -175,8 +178,8 @@ function render() {
 document.addEventListener('click', e => {
   const b = e.target.closest('button');
   const img = e.target.closest('.item img');
-  if (img) { $('#zoom img').src = img.dataset.big || img.src; $('#zoom p').textContent = img.dataset.cap; $('#zoom').showModal(); return; }
-  if (e.target.closest('#zoom')) { $('#zoom').close(); return; }
+  if (img) { $('#zoom img').src = img.src; const big = new Image(); big.onload = () => { $('#zoom img').src = big.src; }; big.src = img.dataset.big || img.src; $('#zoom p').textContent = img.dataset.cap; $('#zoom').showModal(); $('#zoom').focus(); return; }
+  if (e.target.closest('#zoom')) { $('#zoom').close(); $('#zoom img').removeAttribute('src'); return; }
   if (!b) return;
   if (b.dataset.g) { S.g = b.dataset.g; S.f = null; document.querySelectorAll('[data-g]').forEach(x => x.setAttribute('aria-pressed', x === b)); }
   else if (b.dataset.p) { S.p = b.dataset.p; S.f = null; document.querySelectorAll('[data-p]').forEach(x => x.setAttribute('aria-pressed', x === b)); }
@@ -215,7 +218,7 @@ def page(data: dict) -> str:
 <p class="active" id="active"></p>
 <div class="grid" id="grid"></div>
 </div>
-<dialog id="zoom"><img alt=""><p></p></dialog>
+<dialog id="zoom" tabindex="-1" aria-label="사진 크게 보기"><button class="x" aria-label="닫기">×</button><img alt=""><p></p></dialog>
 <script type="application/json" id="data">{blob}</script>
 <script>{JS}</script>
 </body>
