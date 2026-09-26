@@ -2,7 +2,8 @@
 Claude가 쓴 판정(패션 여부·출처 계정·자르기 범위·키워드)을 검사한 뒤 사진을 잘라 photos/에 저장한다.
 
 - 파일 내용으로 구분(같은 파일을 두 번 넣어도 한 번만). 거의 같은 스크린샷(같은 게시물을 두 번 캡처)은 자동으로 '중복' 처리.
-- 판독용 이미지: 스크린샷 3장씩 나란히 + 왼쪽 눈금(0~10 = 위에서부터 0%~100%) → 자르기 범위를 비율로 적기 쉽게.
+- 판독용 이미지: 세로(폰) 캡처는 3장씩 나란히 + 왼쪽 눈금, 가로(PC) 캡처는 1장씩 크게 + 위·왼쪽 눈금
+  (0~10 = 0%~100%) → 자르기 범위를 비율로 적기 쉽게.
 - 출처는 게시물 맨 위 계정 이름을 그대로(@아이디). 화면에 안 보이면 "확인 불가" 라고 적고 source_note에 이유.
 
 판정 파일 형식(.tmp/batchN.json):
@@ -30,10 +31,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import IMAGE_EXT, INBOX_DIR, LABELS_PATH, PHOTOS_DIR, ROOT, TMP_DIR, VOCAB_PATH, load_json, save_json, today_kst
 
 QUEUE_PATH = TMP_DIR / "queue.json"
-PER_SHEET = 3          # 판독용 이미지 한 장에 스크린샷 3장 (계정 이름 글씨가 읽히는 크기)
+PER_SHEET = 3          # 세로(폰) 캡처는 판독용 이미지 한 장에 3장, 가로(PC) 캡처는 1장씩 크게
 CELL_W, CELL_H_MAX = 620, 1340
-GUTTER = 34            # 왼쪽 눈금 폭
-DUP_DISTANCE = 5       # 모양 지문 차이가 이 이하면 같은 게시물로 봄
+WIDE_W = 1600          # 가로 캡처 판독용 폭 (계정 이름 글씨가 읽히는 크기)
+GUTTER = 34            # 눈금 폭
+DUP_DIFF = 1.0         # 축소 흑백 사진의 평균 밝기 차이가 이 미만이면 같은 사진을 다시 캡처한 것으로 봄.
+                       # (2026-09-27: 4.0이었는데 같은 게시물의 다른 컷(흰 배경 룩북)이 2~3으로 나와 중복 처리됨 → 1.0)
 PHOTO_MAX = 1080       # 잘라 낸 사진 긴 변 최대(px)
 LIST_FIELDS = ["items", "styles", "details", "colors", "materials"]
 
@@ -46,15 +49,18 @@ def open_image(path: Path) -> Image.Image:
     return ImageOps.exif_transpose(Image.open(path)).convert("RGB")
 
 
-def dhash(img: Image.Image) -> int:
-    """모양 지문 — 상태표시줄 시간처럼 작은 차이는 무시하고 사진 내용이 같으면 비슷한 값."""
-    g = img.convert("L").resize((9, 16), Image.LANCZOS)
-    px = list(g.tobytes())
-    bits = 0
-    for r in range(16):
-        for c in range(8):
-            bits = (bits << 1) | (px[r * 9 + c] > px[r * 9 + c + 1])
-    return bits
+def fingerprint(img: Image.Image) -> str:
+    """축소 흑백 지문(48x27, 세로면 27x48). 처음엔 9x16 모양 지문을 썼는데, PC 캡처는 어두운 배경·메뉴가 같아서
+    다른 게시물도 같다고 판정함(2026-09-27) → 픽셀 밝기를 직접 비교하는 방식으로 바꿈."""
+    size = (48, 27) if img.width >= img.height else (27, 48)
+    return img.convert("L").resize(size, Image.BILINEAR).tobytes().hex()
+
+
+def same_post(a: str, b: str) -> bool:
+    if len(a) != len(b) or len(a) < 100:  # 크기가 다르거나 옛 형식 지문이면 비교 안 함
+        return False
+    x, y = bytes.fromhex(a), bytes.fromhex(b)
+    return sum(abs(i - j) for i, j in zip(x, y)) / len(x) < DUP_DIFF
 
 
 def inbox_files() -> list[Path]:
@@ -80,7 +86,7 @@ def vocab() -> dict:
 # ---------- --next ----------
 def cmd_next(size: int) -> None:
     labels = load_json(LABELS_PATH, {})
-    known = {int(l["hash"], 16): i for i, l in labels.items() if l.get("hash")}
+    known = [(l["hash"], i) for i, l in labels.items() if l.get("hash") and "dup_of" not in l]
     queue, dups, seen = [], 0, set()
     for p in inbox_files():
         fid = file_id(p)
@@ -88,30 +94,67 @@ def cmd_next(size: int) -> None:
             continue
         seen.add(fid)
         img = open_image(p)
-        h = dhash(img)
-        twin = next((i for k, i in known.items() if bin(k ^ h).count("1") <= DUP_DISTANCE), None)
+        h = fingerprint(img)
+        twin = next((i for k, i in known if same_post(k, h)), None)
         if twin:
-            labels[fid] = {"dup_of": twin, "file": p.name, "added": today_kst(), "hash": f"{h:016x}"}
+            labels[fid] = {"dup_of": twin, "file": p.name, "added": today_kst(), "hash": h}
             dups += 1
             continue
-        known[h] = fid
+        known.append((h, fid))
         if len(queue) < size:
-            queue.append({"id": fid, "file": str(p.relative_to(ROOT)), "w": img.width, "h": img.height, "hash": f"{h:016x}"})
+            queue.append({"id": fid, "file": str(p.relative_to(ROOT)), "w": img.width, "h": img.height, "hash": h})
     if dups:
         save_json(LABELS_PATH, labels)
     for old in TMP_DIR.glob("sheet_*.jpg"):
         old.unlink()
-    for s in range(0, len(queue), PER_SHEET):
-        make_sheet(queue[s:s + PER_SHEET], s // PER_SHEET + 1, s)
+    n_sheet, tall = 0, []
+    for k, q in enumerate(queue):
+        q["n"] = k + 1
+        if q["w"] > q["h"]:
+            n_sheet += 1
+            q["sheet"] = n_sheet
+            make_wide_sheet(q, n_sheet)
+        else:
+            tall.append(q)
+    for s in range(0, len(tall), PER_SHEET):
+        n_sheet += 1
+        for q in tall[s:s + PER_SHEET]:
+            q["sheet"] = n_sheet
+        make_sheet(tall[s:s + PER_SHEET], n_sheet)
     save_json(QUEUE_PATH, queue)
     pending = sum(1 for p in inbox_files() if file_id(p) not in labels) - len(queue)
-    print(f"새 스크린샷 {len(queue)}장 → .tmp/queue.json, 판독용 이미지 {(len(queue) + PER_SHEET - 1) // PER_SHEET}장 (.tmp/sheet_N.jpg)"
+    print(f"새 스크린샷 {len(queue)}장 → .tmp/queue.json, 판독용 이미지 {n_sheet}장 (.tmp/sheet_N.jpg)"
           + (f", 중복 {dups}장 자동 처리" if dups else "") + (f", 다음 묶음에 남은 것 {pending}장" if pending > 0 else ""))
-    for n, q in enumerate(queue, 1):
-        print(f"  #{n} {q['id']}  {q['file']}  ({q['w']}x{q['h']})")
+    for q in queue:
+        print(f"  #{q['n']} sheet_{q['sheet']}  {q['id']}  {q['file']}  ({q['w']}x{q['h']})")
 
 
-def make_sheet(items: list[dict], sheet_no: int, offset: int) -> None:
+RED = (255, 0, 80)
+
+
+def make_wide_sheet(q: dict, sheet_no: int) -> None:
+    """가로(PC) 캡처 1장: 위쪽 눈금(가로 0~10)과 왼쪽 눈금(세로 0~10), 10% 격자."""
+    img = open_image(ROOT / q["file"])
+    scale = WIDE_W / img.width
+    c = img.resize((WIDE_W, round(img.height * scale)), Image.LANCZOS)
+    head = 40 + 22
+    sheet = Image.new("RGB", (GUTTER + c.width + 8, head + c.height + 8), "white")
+    sheet.paste(c, (GUTTER, head))
+    d = ImageDraw.Draw(sheet, "RGBA")
+    f_big, f_small = font(24), font(15)
+    d.text((6, 6), f"#{q['n']}  {q['id']}  ({Path(q['file']).name})", fill="black", font=f_big)
+    for t in range(11):
+        x = GUTTER + round(c.width * t / 10)
+        y = head + round(c.height * t / 10)
+        d.line([(x, head - 8), (x, head + c.height)], fill=(255, 0, 80, 150), width=1)
+        d.line([(GUTTER - 8, y), (GUTTER + c.width, y)], fill=(255, 0, 80, 150), width=1)
+        d.text((min(x - 4, GUTTER + c.width - 20), head - 24), str(t), fill=RED, font=f_small)
+        d.text((4, max(head, y - 9)), str(t), fill=RED, font=f_small)
+    sheet.save(TMP_DIR / f"sheet_{sheet_no}.jpg", quality=88)
+
+
+def make_sheet(items: list[dict], sheet_no: int) -> None:
+    """세로(폰) 캡처 3장 나란히, 왼쪽 눈금(0=맨 위, 10=맨 아래)."""
     cells = []
     for q in items:
         img = open_image(ROOT / q["file"])
@@ -124,15 +167,14 @@ def make_sheet(items: list[dict], sheet_no: int, offset: int) -> None:
     f_big, f_small = font(24), font(15)
     for k, (q, c) in enumerate(zip(items, cells)):
         x0 = k * (GUTTER + CELL_W + 16)
-        d.text((x0 + 4, 6), f"#{offset + k + 1}  {q['id']}", fill="black", font=f_big)
+        d.text((x0 + 4, 6), f"#{q['n']}  {q['id']}", fill="black", font=f_big)
         sheet.paste(c, (x0 + GUTTER, head))
-        for t in range(11):  # 눈금: 0=맨 위, 10=맨 아래
+        for t in range(11):
             y = head + round(c.height * t / 10)
-            d.line([(x0 + GUTTER - 10, y), (x0 + GUTTER + c.width, y)], fill=(255, 0, 80), width=1)
-            d.text((x0 + 2, max(head, y - 9)), str(t), fill=(255, 0, 80), font=f_small)
-        for t in (5,):  # 가로 가운데 표시
-            x = x0 + GUTTER + round(c.width * t / 10)
-            d.line([(x, head), (x, head + 12)], fill=(255, 0, 80), width=2)
+            d.line([(x0 + GUTTER - 10, y), (x0 + GUTTER + c.width, y)], fill=RED, width=1)
+            d.text((x0 + 2, max(head, y - 9)), str(t), fill=RED, font=f_small)
+        x = x0 + GUTTER + round(c.width / 2)  # 가로 가운데 표시
+        d.line([(x, head), (x, head + 12)], fill=RED, width=2)
     sheet.save(TMP_DIR / f"sheet_{sheet_no}.jpg", quality=88)
 
 
