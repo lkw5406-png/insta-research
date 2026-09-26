@@ -3,7 +3,8 @@
 - 사진마다 출처 계정(@아이디, 인스타 프로필 링크), 저장 날짜, 한 줄 설명, 키워드.
 - 걸러 보기: [전체|여성|남성] · 아이템·스타일·컬러·소재 · 출처 계정 · 기간(전체/이번 주/이번 달).
 - 기본(로컬): report/index.html 이 ../photos/ 원본 사진을 읽음 → 이 PC에서만 열림.
-- --publish: 깃허브 공개 링크용 docs/index.html + docs/img/(긴 변 480px 축소본만).
+- --publish: 깃허브 공개 링크용 docs/index.html + docs/img/(목록용 긴 변 480px) + docs/img/big/(눌렀을 때 확대용 1000px).
+  (2026-09-27 사장님 요청: 눌렀을 때 더 크게 → 확대용 추가. 원본 캡처 전체는 여전히 비공개)
   사장님 결정(2026-09-26)으로 공개하되 저작권 위험을 줄임: 검색 차단(noindex + robots.txt), 작은 사진만, 사진마다 출처 계정.
   원본·전체 캡처(inbox/, photos/)는 절대 저장소에 올리지 않음(.gitignore).
 
@@ -29,7 +30,8 @@ SWATCH = {"블랙": "#111111", "화이트": "#f7f7f5", "아이보리/크림": "#
           "메탈릭(실버·골드)": "linear-gradient(135deg,#c9c9c9,#f1e3a8 50%,#b9b9b9)",
           "멀티컬러/비비드": "conic-gradient(#e0402a,#e0c02a,#3fb04f,#2a78d6,#9a4ad6,#e0402a)"}
 FIELDS = ["items", "styles", "colors", "materials", "details"]
-PUBLISH_MAX = 480  # --publish 때 공개하는 사진 긴 변(px)
+PUBLISH_MAX = 480  # --publish 때 목록에 쓰는 사진 긴 변(px)
+ZOOM_MAX = 1000    # 사진을 눌렀을 때 크게 보는 사진 긴 변(px)
 
 
 def rows(publish: bool) -> list[dict]:
@@ -39,27 +41,29 @@ def rows(publish: bool) -> list[dict]:
             continue
         for k, p in enumerate(l.get("photos", [])):
             src = small_copy(ROOT / p, keep) if publish else "../" + p
-            out.append({"id": f"{fid}_{k}", "src": src, "source": l.get("source", ""), "note": l.get("source_note", ""),
+            big = small_copy(ROOT / p, keep, "big", ZOOM_MAX) if publish else "../" + p
+            out.append({"id": f"{fid}_{k}", "src": src, "big": big, "source": l.get("source", ""), "note": l.get("source_note", ""),
                         "g": l["gender"], "sum": l.get("summary", ""), "added": l["added"],
                         **{f: l.get(f, []) for f in FIELDS}})
     if publish:  # 판정표에서 빠진 사진의 공개본은 지움
-        for old in (DOCS_DIR / "img").glob("*.jpg"):
-            if old.name not in keep:
+        for old in (DOCS_DIR / "img").rglob("*.jpg"):
+            if old.relative_to(DOCS_DIR / "img").as_posix() not in keep:
                 old.unlink()
     return sorted(out, key=lambda r: (r["added"], r["id"]), reverse=True)
 
 
-def small_copy(path: Path, keep: set) -> str:
-    """공개용 축소본 docs/img/<이름>.jpg (이미 있으면 그대로)."""
+def small_copy(path: Path, keep: set, sub: str = "", size: int = PUBLISH_MAX) -> str:
+    """공개용 축소본 docs/img/[sub/]<이름>.jpg (이미 있으면 그대로)."""
     from PIL import Image
-    out = DOCS_DIR / "img" / path.name
-    keep.add(out.name)
+    rel = f"{sub}/{path.name}" if sub else path.name
+    out = DOCS_DIR / "img" / rel
+    keep.add(rel)
     if not out.exists():
         out.parent.mkdir(parents=True, exist_ok=True)
         im = Image.open(path).convert("RGB")
-        im.thumbnail((PUBLISH_MAX, PUBLISH_MAX), Image.LANCZOS)
-        im.save(out, "JPEG", quality=78)
-    return "img/" + out.name
+        im.thumbnail((size, size), Image.LANCZOS)
+        im.save(out, "JPEG", quality=80)
+    return "img/" + rel
 
 
 CSS = """
@@ -113,9 +117,12 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--accent); outline
 .tags { display:flex; flex-wrap:wrap; gap:4px; }
 .tags span { font-size:12px; padding:2px 8px; border-radius:999px; background:var(--chip); }
 .empty { color:var(--muted); padding:40px 0; text-align:center; }
-dialog { border:0; padding:0; background:transparent; max-width:96vw; max-height:96vh; }
-dialog::backdrop { background:rgba(0,0,0,.8); }
-dialog img { max-width:96vw; max-height:88vh; display:block; border-radius:8px; }
+dialog { border:0; padding:0; background:transparent; max-width:98vw; max-height:98vh; overflow:visible; }
+dialog::backdrop { background:rgba(0,0,0,.88); }
+dialog:focus, dialog:focus-visible { outline:none; }
+dialog p { text-align:center; }
+dialog img { display:block; height:90vh; width:auto; max-width:98vw; object-fit:contain; border-radius:8px; cursor:zoom-out; }
+@media (orientation:portrait) { dialog img { height:auto; width:98vw; max-height:88vh; } }
 dialog p { color:#fff; margin:8px 0 0; font-size:14px; }
 @media (max-width:560px) { .facet { flex-direction:column; gap:4px; } .facet > span { width:auto; padding:0; } }
 """
@@ -161,14 +168,14 @@ function render() {
       ? `<a class="src" href="https://www.instagram.com/${encodeURIComponent(r.source.slice(1))}/" target="_blank" rel="noopener">${esc(r.source)}</a>`
       : `<span class="unk" title="${esc(r.note)}">출처 확인 불가</span>`;
     const tags = [...r.items, ...r.styles, ...r.colors, ...r.materials, ...r.details].map(t => `<span>${esc(t)}</span>`).join('');
-    return `<figure class="item"><img loading="lazy" src="${r.src}" alt="${esc(r.sum)}" data-cap="${esc((r.source || '') + ' · ' + r.sum)}">
+    return `<figure class="item"><img loading="lazy" src="${r.src}" alt="${esc(r.sum)}" data-big="${r.big}" data-cap="${esc((r.source || '') + ' · ' + r.sum)}">
       <div class="body">${src} <span class="meta">· ${r.g} · ${r.added}</span><p class="sum">${esc(r.sum)}</p><div class="tags">${tags}</div></div></figure>`;
   }).join('') : '<p class="empty">조건에 맞는 사진이 없어요.</p>';
 }
 document.addEventListener('click', e => {
   const b = e.target.closest('button');
   const img = e.target.closest('.item img');
-  if (img) { $('#zoom img').src = img.src; $('#zoom p').textContent = img.dataset.cap; $('#zoom').showModal(); return; }
+  if (img) { $('#zoom img').src = img.dataset.big || img.src; $('#zoom p').textContent = img.dataset.cap; $('#zoom').showModal(); return; }
   if (e.target.closest('#zoom')) { $('#zoom').close(); return; }
   if (!b) return;
   if (b.dataset.g) { S.g = b.dataset.g; S.f = null; document.querySelectorAll('[data-g]').forEach(x => x.setAttribute('aria-pressed', x === b)); }
