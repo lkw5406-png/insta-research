@@ -1,6 +1,7 @@
 """리포트 생성 Tool — 'LKW 리서치 보드'. 판정표(data/photo_labels.json)의 패션 사진을 목록별 사진 갤러리로 만든다.
 
-- 목록 3개: [인스타그램 | 핀터레스트 | 런웨이] (common.BOARDS, 주소 #instagram / #pinterest / #runway 로 바로 열림).
+- 목록: [전체 | 인스타그램 | 핀터레스트 | 런웨이] (common.BOARDS + 3개를 합친 '전체'(기본), 주소 #all / #instagram / #pinterest / #runway).
+  (2026-09-27 사장님 요청으로 '전체' 추가. 전체 목록의 사진 카드에는 어느 목록 사진인지 표시)
 - 사진마다 출처(인스타·핀터레스트 @아이디는 프로필 링크, 런웨이는 브랜드·시즌), 저장 날짜, 한 줄 설명, 키워드.
 - 걸러 보기: [전체|여성|남성] · 아이템·스타일·컬러·소재 · 출처 계정 · 기간(전체/이번 주/이번 달).
 - 기본(로컬): report/index.html 이 ../photos/ 원본 사진을 읽음 → 이 PC에서만 열림.
@@ -30,6 +31,7 @@ SWATCH = {"블랙": "#111111", "화이트": "#f7f7f5", "아이보리/크림": "#
           "옐로우/머스타드": "#d8a824", "오렌지": "#e0702a",
           "메탈릭(실버·골드)": "linear-gradient(135deg,#c9c9c9,#f1e3a8 50%,#b9b9b9)",
           "멀티컬러/비비드": "conic-gradient(#e0402a,#e0c02a,#3fb04f,#2a78d6,#9a4ad6,#e0402a)"}
+ALL = {"all": {"name": "전체", "folder": "", "source_label": "출처"}}  # 3개 목록을 합친 보기
 FIELDS = ["items", "styles", "colors", "materials", "details"]
 PUBLISH_MAX = 480  # --publish 때 목록에 쓰는 사진 긴 변(px)
 ZOOM_MAX = 1000    # 사진을 눌렀을 때 크게 보는 사진 긴 변(px)
@@ -120,6 +122,8 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--accent); outline
 .tags span { font-size:12px; padding:2px 8px; border-radius:999px; background:var(--chip); }
 .empty { color:var(--muted); padding:48px 16px; text-align:center; line-height:1.8; column-span:all; }
 .empty b { color:var(--ink); font-size:17px; }
+.bd { display:inline-block; font-size:11px; font-weight:700; padding:1px 7px; border-radius:6px; margin-right:6px; vertical-align:1px; color:#fff; }
+.bd-instagram { background:#c13584; } .bd-pinterest { background:#e60023; } .bd-runway { background:#3a3a3a; }
 .empty code { background:var(--chip); color:var(--ink); padding:2px 8px; border-radius:6px; }
 .boards { display:flex; gap:8px; margin-top:18px; overflow-x:auto; scrollbar-width:none; }
 .boards button { flex:none; font:inherit; font-size:16px; font-weight:700; padding:10px 18px; border-radius:12px; cursor:pointer;
@@ -143,7 +147,7 @@ dialog#zoom .x { position:absolute; top:14px; right:18px; font:inherit; font-siz
 JS = r"""
 const D = JSON.parse(document.getElementById('data').textContent);
 const LBL = {items:'아이템', styles:'스타일', colors:'컬러', materials:'소재', details:'디테일', source:'출처'};
-const S = {b: D.boards[location.hash.slice(1)] ? location.hash.slice(1) : 'instagram', g:'전체', p:'all', f:null};   // f = {field, value}
+const S = {b: D.boards[location.hash.slice(1)] ? location.hash.slice(1) : 'all', g:'전체', p:'all', f:null};   // f = {field, value}
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const day = s => new Date(s + 'T00:00:00+09:00');
@@ -152,12 +156,13 @@ function inPeriod(r) {
   const diff = (day(D.today) - day(r.added)) / 864e5;
   return S.p === 'w' ? diff < 7 : diff < 31;
 }
-const base = () => D.rows.filter(r => r.b === S.b && (S.g === '전체' || r.g === S.g || r.g === '공용') && inPeriod(r));
+const inBoard = (r, b) => b === 'all' || r.b === b;
+const base = () => D.rows.filter(r => inBoard(r, S.b) && (S.g === '전체' || r.g === S.g || r.g === '공용') && inPeriod(r));
 const LINK = {instagram: 'https://www.instagram.com/', pinterest: 'https://www.pinterest.com/'};
 function tabs() {
   document.querySelectorAll('[data-b]').forEach(x => {
     x.setAttribute('aria-selected', x.dataset.b === S.b);
-    x.querySelector('i').textContent = D.rows.filter(r => r.b === x.dataset.b).length;
+    x.querySelector('i').textContent = D.rows.filter(r => inBoard(r, x.dataset.b)).length;
   });
 }
 const has = (r, f) => f.field === 'source' ? r.source === f.value : r[f.field].includes(f.value);
@@ -172,16 +177,16 @@ function render() {
   LBL.source = B.source_label;
   const rows = base();
   const shown = S.f ? rows.filter(r => has(r, S.f)) : rows;
-  const none = !D.rows.some(r => r.b === S.b);
+  const none = !D.rows.some(r => inBoard(r, S.b));
   $('#grid').classList.toggle('grid', !none);
   ['#stats', '#facets', '#active'].forEach(k => $(k).hidden = none);
   if (none) {
     $('#grid').innerHTML = `<div class="empty"><b>${B.name} 목록이 아직 비어 있어요.</b><br>
-      캡처를 <code>바탕화면/인스타 리서치/inbox/${B.folder}</code> 폴더에 넣고 "리서치 보드 정리해줘"라고 말씀해 주세요.</div>`;
+      캡처를 <code>바탕화면/인스타 리서치/inbox/${B.folder || '인스타그램·핀터레스트·런웨이'}</code> 폴더에 넣고 "리서치 보드 정리해줘"라고 말씀해 주세요.</div>`;
     return;
   }
   const top = f => (count(rows, f)[0] || ['-', 0]);
-  $('#stats').innerHTML = [['패션 사진', rows.length + '장'], [B.source_label, count(rows, 'source').length + (S.b === 'runway' ? '개' : '곳')],
+  $('#stats').innerHTML = [['패션 사진', rows.length + '장'], [B.source_label, count(rows, 'source').length + (S.b === 'runway' ? '개' : '곳')], ...(S.b === 'all' ? [['목록', Object.keys(D.boards).filter(k => k !== 'all' && rows.some(r => r.b === k)).map(k => D.boards[k].name).join('·') || '-']] : []),
     ['많이 나온 아이템', top('items')[0]], ['스타일', top('styles')[0]], ['컬러', top('colors')[0]]]
     .map(([k, v]) => `<div class="stat"><small>${k}</small><b>${esc(v)}</b></div>`).join('');
   $('#facets').innerHTML = ['items', 'styles', 'colors', 'materials', 'details', 'source'].map(f => {
@@ -203,7 +208,7 @@ function render() {
     const origin = r.origin ? ` <span class="meta">· 원출처 ${esc(r.origin)}</span>` : '';
     const tags = [...r.items, ...r.styles, ...r.colors, ...r.materials, ...r.details].map(t => `<span>${esc(t)}</span>`).join('');
     return `<figure class="item"><img loading="lazy" src="${r.src}" alt="${esc(r.sum)}" data-big="${r.big}" data-cap="${esc((r.source || '') + ' · ' + r.sum)}">
-      <div class="body">${src}${origin} <span class="meta">· ${r.g} · ${r.added}</span><p class="sum">${esc(r.sum)}</p><div class="tags">${tags}</div></div></figure>`;
+      <div class="body">${S.b === 'all' ? `<span class="bd bd-${r.b}">${esc(D.boards[r.b].name)}</span>` : ''}${src}${origin} <span class="meta">· ${r.g} · ${r.added}</span><p class="sum">${esc(r.sum)}</p><div class="tags">${tags}</div></div></figure>`;
   }).join('') : '<p class="empty">조건에 맞는 사진이 없어요.</p>';
 }
 document.addEventListener('click', e => {
@@ -239,7 +244,7 @@ def page(data: dict) -> str:
 <header>
   <h1>LKW 리서치 보드</h1>
   <p>인스타그램·핀터레스트·런웨이에서 모은 패션 사진 · 전체 {len(data['rows'])}장 · {data['today']} 갱신</p>
-  <nav class="boards" role="tablist" aria-label="목록">{''.join(f'<button role="tab" data-b="{k}" aria-selected="false">{b["name"]} <i>0</i></button>' for k, b in BOARDS.items())}</nav>
+  <nav class="boards" role="tablist" aria-label="목록">{''.join(f'<button role="tab" data-b="{k}" aria-selected="false">{b["name"]} <i>0</i></button>' for k, b in {**ALL, **BOARDS}.items())}</nav>
 </header>
 <div class="topbar">
   <div class="pill" role="group" aria-label="성별">{''.join(f'<button data-g="{g}" aria-pressed="{str(g == "전체").lower()}">{g}</button>' for g in ("전체", "여성", "남성"))}</div>
@@ -261,7 +266,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--publish", action="store_true")
     a = ap.parse_args()
-    data = {"today": today_kst(), "rows": rows(a.publish), "swatch": SWATCH, "boards": BOARDS}
+    data = {"today": today_kst(), "rows": rows(a.publish), "swatch": SWATCH, "boards": {**ALL, **BOARDS}}
     folder = DOCS_DIR if a.publish else REPORT_DIR
     folder.mkdir(exist_ok=True)
     out = folder / "index.html"
