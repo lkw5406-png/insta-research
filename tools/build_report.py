@@ -1,6 +1,7 @@
-"""비공개 리포트 생성 Tool — 판정표(data/photo_labels.json)의 패션 사진을 모아 사진 갤러리 리포트를 만든다.
+"""리포트 생성 Tool — 'LKW 리서치 보드'. 판정표(data/photo_labels.json)의 패션 사진을 목록별 사진 갤러리로 만든다.
 
-- 사진마다 출처 계정(@아이디, 인스타 프로필 링크), 저장 날짜, 한 줄 설명, 키워드.
+- 목록 3개: [인스타그램 | 핀터레스트 | 런웨이] (common.BOARDS, 주소 #instagram / #pinterest / #runway 로 바로 열림).
+- 사진마다 출처(인스타·핀터레스트 @아이디는 프로필 링크, 런웨이는 브랜드·시즌), 저장 날짜, 한 줄 설명, 키워드.
 - 걸러 보기: [전체|여성|남성] · 아이템·스타일·컬러·소재 · 출처 계정 · 기간(전체/이번 주/이번 달).
 - 기본(로컬): report/index.html 이 ../photos/ 원본 사진을 읽음 → 이 PC에서만 열림.
 - --publish: 깃허브 공개 링크용 docs/index.html + docs/img/(목록용 긴 변 480px) + docs/img/big/(눌렀을 때 확대용 1000px).
@@ -19,7 +20,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import LABELS_PATH, REPORT_DIR, ROOT, load_json, today_kst
+from common import BOARDS, LABELS_PATH, REPORT_DIR, ROOT, load_json, today_kst
 
 DOCS_DIR = ROOT / "docs"
 
@@ -42,7 +43,8 @@ def rows(publish: bool) -> list[dict]:
         for k, p in enumerate(l.get("photos", [])):
             src = small_copy(ROOT / p, keep) if publish else "../" + p
             big = small_copy(ROOT / p, keep, "big", ZOOM_MAX) if publish else "../" + p
-            out.append({"id": f"{fid}_{k}", "src": src, "big": big, "source": l.get("source", ""), "note": l.get("source_note", ""),
+            out.append({"id": f"{fid}_{k}", "b": l.get("board", "instagram"), "src": src, "big": big,
+                        "source": l.get("source", ""), "origin": l.get("origin", ""), "note": l.get("source_note", ""),
                         "g": l["gender"], "sum": l.get("summary", ""), "added": l["added"],
                         **{f: l.get(f, []) for f in FIELDS}})
     if publish:  # 판정표에서 빠진 사진의 공개본은 지움
@@ -116,7 +118,15 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--accent); outline
 .sum { margin:4px 0 8px; font-size:14px; }
 .tags { display:flex; flex-wrap:wrap; gap:4px; }
 .tags span { font-size:12px; padding:2px 8px; border-radius:999px; background:var(--chip); }
-.empty { color:var(--muted); padding:40px 0; text-align:center; }
+.empty { color:var(--muted); padding:48px 16px; text-align:center; line-height:1.8; column-span:all; }
+.empty b { color:var(--ink); font-size:17px; }
+.empty code { background:var(--chip); color:var(--ink); padding:2px 8px; border-radius:6px; }
+.boards { display:flex; gap:8px; margin-top:18px; overflow-x:auto; scrollbar-width:none; }
+.boards button { flex:none; font:inherit; font-size:16px; font-weight:700; padding:10px 18px; border-radius:12px; cursor:pointer;
+  border:1px solid var(--border); background:var(--surface); color:var(--ink-2); display:inline-flex; gap:8px; align-items:center; }
+.boards button i { font-style:normal; font-size:13px; font-weight:600; color:var(--muted); }
+.boards button[aria-selected="true"] { background:var(--ink); color:var(--page); border-color:var(--ink); }
+.boards button[aria-selected="true"] i { color:var(--page); opacity:.7; }
 /* 사진 크게 보기: 화면 전체 덮개 (2026-09-27 PC에서 사진이 작게·흰 테두리로 보여 전체 화면 방식으로 바꿈) */
 dialog#zoom { position:fixed; inset:0; width:100vw; height:100vh; max-width:none; max-height:none; margin:0; padding:0;
   border:0; background:rgba(0,0,0,.92); color:#fff; outline:none; overflow:hidden; }
@@ -133,7 +143,7 @@ dialog#zoom .x { position:absolute; top:14px; right:18px; font:inherit; font-siz
 JS = r"""
 const D = JSON.parse(document.getElementById('data').textContent);
 const LBL = {items:'아이템', styles:'스타일', colors:'컬러', materials:'소재', details:'디테일', source:'출처'};
-const S = {g:'전체', p:'all', f:null};   // f = {field, value}
+const S = {b: D.boards[location.hash.slice(1)] ? location.hash.slice(1) : 'instagram', g:'전체', p:'all', f:null};   // f = {field, value}
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const day = s => new Date(s + 'T00:00:00+09:00');
@@ -142,7 +152,14 @@ function inPeriod(r) {
   const diff = (day(D.today) - day(r.added)) / 864e5;
   return S.p === 'w' ? diff < 7 : diff < 31;
 }
-const base = () => D.rows.filter(r => (S.g === '전체' || r.g === S.g || r.g === '공용') && inPeriod(r));
+const base = () => D.rows.filter(r => r.b === S.b && (S.g === '전체' || r.g === S.g || r.g === '공용') && inPeriod(r));
+const LINK = {instagram: 'https://www.instagram.com/', pinterest: 'https://www.pinterest.com/'};
+function tabs() {
+  document.querySelectorAll('[data-b]').forEach(x => {
+    x.setAttribute('aria-selected', x.dataset.b === S.b);
+    x.querySelector('i').textContent = D.rows.filter(r => r.b === x.dataset.b).length;
+  });
+}
 const has = (r, f) => f.field === 'source' ? r.source === f.value : r[f.field].includes(f.value);
 function count(rows, field) {
   const c = {};
@@ -150,10 +167,21 @@ function count(rows, field) {
   return Object.entries(c).sort((a, b) => b[1] - a[1]);
 }
 function render() {
+  tabs();
+  const B = D.boards[S.b];
+  LBL.source = B.source_label;
   const rows = base();
   const shown = S.f ? rows.filter(r => has(r, S.f)) : rows;
+  const none = !D.rows.some(r => r.b === S.b);
+  $('#grid').classList.toggle('grid', !none);
+  ['#stats', '#facets', '#active'].forEach(k => $(k).hidden = none);
+  if (none) {
+    $('#grid').innerHTML = `<div class="empty"><b>${B.name} 목록이 아직 비어 있어요.</b><br>
+      캡처를 <code>바탕화면/인스타 리서치/inbox/${B.folder}</code> 폴더에 넣고 "리서치 보드 정리해줘"라고 말씀해 주세요.</div>`;
+    return;
+  }
   const top = f => (count(rows, f)[0] || ['-', 0]);
-  $('#stats').innerHTML = [['패션 사진', rows.length + '장'], ['출처 계정', count(rows, 'source').length + '곳'],
+  $('#stats').innerHTML = [['패션 사진', rows.length + '장'], [B.source_label, count(rows, 'source').length + (S.b === 'runway' ? '개' : '곳')],
     ['많이 나온 아이템', top('items')[0]], ['스타일', top('styles')[0]], ['컬러', top('colors')[0]]]
     .map(([k, v]) => `<div class="stat"><small>${k}</small><b>${esc(v)}</b></div>`).join('');
   $('#facets').innerHTML = ['items', 'styles', 'colors', 'materials', 'details', 'source'].map(f => {
@@ -167,12 +195,15 @@ function render() {
   }).join('');
   $('#active').innerHTML = S.f ? `<b>${LBL[S.f.field]}: ${esc(S.f.value)}</b> · ${shown.length}장 <button id="clear">전체 보기</button>` : `${shown.length}장, 최근 저장 순`;
   $('#grid').innerHTML = shown.length ? shown.map(r => {
-    const src = r.source.startsWith('@')
-      ? `<a class="src" href="https://www.instagram.com/${encodeURIComponent(r.source.slice(1))}/" target="_blank" rel="noopener">${esc(r.source)}</a>`
-      : `<span class="unk" title="${esc(r.note)}">출처 확인 불가</span>`;
+    const src = r.source === '확인 불가' || !r.source
+      ? `<span class="unk" title="${esc(r.note)}">출처 확인 불가</span>`
+      : r.source.startsWith('@') && LINK[r.b]
+        ? `<a class="src" href="${LINK[r.b]}${encodeURIComponent(r.source.slice(1))}/" target="_blank" rel="noopener">${esc(r.source)}</a>`
+        : `<span class="src">${esc(r.source)}</span>`;
+    const origin = r.origin ? ` <span class="meta">· 원출처 ${esc(r.origin)}</span>` : '';
     const tags = [...r.items, ...r.styles, ...r.colors, ...r.materials, ...r.details].map(t => `<span>${esc(t)}</span>`).join('');
     return `<figure class="item"><img loading="lazy" src="${r.src}" alt="${esc(r.sum)}" data-big="${r.big}" data-cap="${esc((r.source || '') + ' · ' + r.sum)}">
-      <div class="body">${src} <span class="meta">· ${r.g} · ${r.added}</span><p class="sum">${esc(r.sum)}</p><div class="tags">${tags}</div></div></figure>`;
+      <div class="body">${src}${origin} <span class="meta">· ${r.g} · ${r.added}</span><p class="sum">${esc(r.sum)}</p><div class="tags">${tags}</div></div></figure>`;
   }).join('') : '<p class="empty">조건에 맞는 사진이 없어요.</p>';
 }
 document.addEventListener('click', e => {
@@ -181,7 +212,8 @@ document.addEventListener('click', e => {
   if (img) { $('#zoom img').src = img.src; const big = new Image(); big.onload = () => { $('#zoom img').src = big.src; }; big.src = img.dataset.big || img.src; $('#zoom p').textContent = img.dataset.cap; $('#zoom').showModal(); $('#zoom').focus(); return; }
   if (e.target.closest('#zoom')) { $('#zoom').close(); $('#zoom img').removeAttribute('src'); return; }
   if (!b) return;
-  if (b.dataset.g) { S.g = b.dataset.g; S.f = null; document.querySelectorAll('[data-g]').forEach(x => x.setAttribute('aria-pressed', x === b)); }
+  if (b.dataset.b) { S.b = b.dataset.b; S.f = null; history.replaceState(null, '', '#' + S.b); window.scrollTo({top: 0}); }
+  else if (b.dataset.g) { S.g = b.dataset.g; S.f = null; document.querySelectorAll('[data-g]').forEach(x => x.setAttribute('aria-pressed', x === b)); }
   else if (b.dataset.p) { S.p = b.dataset.p; S.f = null; document.querySelectorAll('[data-p]').forEach(x => x.setAttribute('aria-pressed', x === b)); }
   else if (b.dataset.f) { const same = S.f && S.f.field === b.dataset.f && S.f.value === b.dataset.v; S.f = same ? null : {field: b.dataset.f, value: b.dataset.v}; }
   else if (b.id === 'clear') S.f = null;
@@ -194,20 +226,20 @@ render();
 
 def page(data: dict) -> str:
     blob = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
-    n_src = len({r["source"] for r in data["rows"] if r["source"].startswith("@")})
     return f"""<!doctype html>
 <html lang="ko">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>인스타 저장 패션 모음</title>
+<title>LKW 리서치 보드</title>
 <style>{CSS}</style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>인스타 저장 패션 모음</h1>
-  <p>저장한 인스타 게시물 중 패션 사진만 골라 정리 · 사진 {len(data['rows'])}장 · 출처 계정 {n_src}곳 · {data['today']} 갱신</p>
+  <h1>LKW 리서치 보드</h1>
+  <p>인스타그램·핀터레스트·런웨이에서 모은 패션 사진 · 전체 {len(data['rows'])}장 · {data['today']} 갱신</p>
+  <nav class="boards" role="tablist" aria-label="목록">{''.join(f'<button role="tab" data-b="{k}" aria-selected="false">{b["name"]} <i>0</i></button>' for k, b in BOARDS.items())}</nav>
 </header>
 <div class="topbar">
   <div class="pill" role="group" aria-label="성별">{''.join(f'<button data-g="{g}" aria-pressed="{str(g == "전체").lower()}">{g}</button>' for g in ("전체", "여성", "남성"))}</div>
@@ -229,7 +261,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--publish", action="store_true")
     a = ap.parse_args()
-    data = {"today": today_kst(), "rows": rows(a.publish), "swatch": SWATCH}
+    data = {"today": today_kst(), "rows": rows(a.publish), "swatch": SWATCH, "boards": BOARDS}
     folder = DOCS_DIR if a.publish else REPORT_DIR
     folder.mkdir(exist_ok=True)
     out = folder / "index.html"

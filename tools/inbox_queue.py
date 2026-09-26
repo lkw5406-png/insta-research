@@ -4,10 +4,13 @@ Claude가 쓴 판정(패션 여부·출처 계정·자르기 범위·키워드)�
 - 파일 내용으로 구분(같은 파일을 두 번 넣어도 한 번만). 거의 같은 스크린샷(같은 게시물을 두 번 캡처)은 자동으로 '중복' 처리.
 - 판독용 이미지: 세로(폰) 캡처는 3장씩 나란히 + 왼쪽 눈금, 가로(PC) 캡처는 1장씩 크게 + 위·왼쪽 눈금
   (0~10 = 0%~100%) → 자르기 범위를 비율로 적기 쉽게.
-- 출처는 게시물 맨 위 계정 이름을 그대로(@아이디). 화면에 안 보이면 "확인 불가" 라고 적고 source_note에 이유.
+- 목록(board)은 넣은 폴더로 정해짐: inbox/인스타그램, inbox/핀터레스트, inbox/런웨이 (inbox 바로 아래 파일은 인스타그램으로 봄).
+- 출처(source) 규칙 — 화면에 안 보이면 "확인 불가" + source_note에 이유. 추측으로 채우지 않음.
+  인스타그램: 게시물 맨 위 계정 "@아이디" / 핀터레스트: 핀을 올린 계정 "@아이디" (+ 원래 사이트가 보이면 origin에 "musinsa.com" 등)
+  런웨이: "브랜드 시즌" (예: "Prada 2027SS", "Lemaire 2026FW") + 캡처한 사이트가 보이면 origin (예: "vogue.com")
 
 판정 파일 형식(.tmp/batchN.json):
-  {"파일id": {"fashion": true, "source": "@아이디", "crop": [x1, y1, x2, y2],   # 0~1 비율. 사진 여러 장이면 [[...], [...]]
+  {"파일id": {"fashion": true, "source": "@아이디", "origin": "(선택)", "crop": [x1, y1, x2, y2],   # 0~1 비율. 여러 장이면 [[...], [...]]
              "gender": "여성|남성|공용", "summary": "한 줄 설명",
              "items": [], "styles": [], "details": [], "colors": [], "materials": []},
    "파일id2": {"fashion": false}}
@@ -28,7 +31,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import IMAGE_EXT, INBOX_DIR, LABELS_PATH, PHOTOS_DIR, ROOT, TMP_DIR, VOCAB_PATH, load_json, save_json, today_kst
+from common import BOARDS, IMAGE_EXT, INBOX_DIR, LABELS_PATH, PHOTOS_DIR, ROOT, TMP_DIR, VOCAB_PATH, load_json, save_json, today_kst
 
 QUEUE_PATH = TMP_DIR / "queue.json"
 PER_SHEET = 3          # 세로(폰) 캡처는 판독용 이미지 한 장에 3장, 가로(PC) 캡처는 1장씩 크게
@@ -61,6 +64,13 @@ def same_post(a: str, b: str) -> bool:
         return False
     x, y = bytes.fromhex(a), bytes.fromhex(b)
     return sum(abs(i - j) for i, j in zip(x, y)) / len(x) < DUP_DIFF
+
+
+def board_of(path: Path) -> str:
+    """inbox/<폴더>/... 의 첫 폴더 이름으로 목록을 정함. 모르는 폴더·inbox 바로 아래는 인스타그램."""
+    parts = path.relative_to(INBOX_DIR).parts
+    name = parts[0] if len(parts) > 1 else ""
+    return next((k for k, b in BOARDS.items() if name in (b["folder"], k)), "instagram")
 
 
 def inbox_files() -> list[Path]:
@@ -102,7 +112,7 @@ def cmd_next(size: int) -> None:
             continue
         known.append((h, fid))
         if len(queue) < size:
-            queue.append({"id": fid, "file": str(p.relative_to(ROOT)), "w": img.width, "h": img.height, "hash": h})
+            queue.append({"id": fid, "file": str(p.relative_to(ROOT)), "board": board_of(p), "w": img.width, "h": img.height, "hash": h})
     if dups:
         save_json(LABELS_PATH, labels)
     for old in TMP_DIR.glob("sheet_*.jpg"):
@@ -142,7 +152,7 @@ def make_wide_sheet(q: dict, sheet_no: int) -> None:
     sheet.paste(c, (GUTTER, head))
     d = ImageDraw.Draw(sheet, "RGBA")
     f_big, f_small = font(24), font(15)
-    d.text((6, 6), f"#{q['n']}  {q['id']}  ({Path(q['file']).name})", fill="black", font=f_big)
+    d.text((6, 6), f"#{q['n']}  {q['id']}  [{BOARDS[q['board']]['name']}]  ({Path(q['file']).name})", fill="black", font=f_big)
     for t in range(11):
         x = GUTTER + round(c.width * t / 10)
         y = head + round(c.height * t / 10)
@@ -167,7 +177,7 @@ def make_sheet(items: list[dict], sheet_no: int) -> None:
     f_big, f_small = font(24), font(15)
     for k, (q, c) in enumerate(zip(items, cells)):
         x0 = k * (GUTTER + CELL_W + 16)
-        d.text((x0 + 4, 6), f"#{q['n']}  {q['id']}", fill="black", font=f_big)
+        d.text((x0 + 4, 6), f"#{q['n']}  {q['id']}  [{BOARDS[q['board']]['name']}]", fill="black", font=f_big)
         sheet.paste(c, (x0 + GUTTER, head))
         for t in range(11):
             y = head + round(c.height * t / 10)
@@ -189,14 +199,17 @@ def boxes(crop) -> list[list[float]]:
     return bs
 
 
-def validate(lab: dict, v: dict) -> list[str]:
+def validate(lab: dict, v: dict, board: str = "instagram") -> list[str]:
     if not isinstance(lab.get("fashion"), bool):
         return ["fashion 은 true/false"]
     if not lab["fashion"]:
         return []
     errs = []
     src = lab.get("source", "")
-    if not (isinstance(src, str) and (src.startswith("@") and len(src) > 1 or src == "확인 불가")):
+    if board == "runway":
+        if not (isinstance(src, str) and len(src.strip()) >= 3):
+            errs.append('런웨이 source 는 "브랜드 시즌"(예: "Prada 2027SS") 또는 "확인 불가"')
+    elif not (isinstance(src, str) and (src.startswith("@") and len(src) > 1 or src == "확인 불가")):
         errs.append('source 는 "@아이디" 또는 "확인 불가"')
     if src == "확인 불가" and not lab.get("source_note"):
         errs.append("출처 확인 불가면 source_note에 이유")
@@ -219,7 +232,8 @@ def cmd_merge(path: str) -> int:
     batch = load_json(Path(path), {})
     queue = {q["id"]: q for q in load_json(QUEUE_PATH, [])}
     labels, v = load_json(LABELS_PATH, {}), vocab()
-    problems = {fid: (["큐에 없는 id"] if fid not in queue else validate(lab, v)) for fid, lab in batch.items()}
+    problems = {fid: (["큐에 없는 id"] if fid not in queue else validate(lab, v, queue[fid].get("board", "instagram")))
+                for fid, lab in batch.items()}
     problems = {k: e for k, e in problems.items() if e}
     if problems:
         for fid, e in problems.items():
@@ -229,7 +243,7 @@ def cmd_merge(path: str) -> int:
     today, n_photo = today_kst(), 0
     for fid, lab in batch.items():
         q = queue[fid]
-        rec = {**lab, "file": Path(q["file"]).name, "added": today, "hash": q["hash"]}
+        rec = {**lab, "board": q.get("board", "instagram"), "file": Path(q["file"]).name, "added": today, "hash": q["hash"]}
         if lab["fashion"]:
             img = open_image(ROOT / q["file"])
             out = []
@@ -286,6 +300,8 @@ def main() -> int:
     a = ap.parse_args()
     TMP_DIR.mkdir(exist_ok=True)
     INBOX_DIR.mkdir(exist_ok=True)
+    for b in BOARDS.values():
+        (INBOX_DIR / b["folder"]).mkdir(exist_ok=True)
     PHOTOS_DIR.mkdir(exist_ok=True)
     if a.next:
         cmd_next(a.size)
