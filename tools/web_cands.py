@@ -8,6 +8,8 @@ Claude가 판독 이미지를 직접 보고 고른 뒤 tools/ai_picks.py --add �
 - "musinsa" 무신사 스냅(일반인 착장). "url"에 스냅 목록 주소(예: https://www.musinsa.com/snap/main/recommend?sort=NEWEST).
             robots.txt가 'Claude-User'(사용자가 요청해 Claude가 가져오는 것)를 허용 → 그 이름으로 접속. 사장님 요청 때만 실행.
 - "arena"   Are.na 공개 채널(핀터레스트 비슷한 무드보드). 공식 API(api.are.na/v2), 키 필요 없음. "channel"에 채널 slug.
+- "kream"   KREAM 스타일(착용 후기) 태그 페이지. "url"에 https://kream.co.kr/social/tags/태그 (한 태그당 최신 20개).
+            manifest에 작성자(user)와 태그된 상품(products)도 저장 → 설명 쓸 때 참고.
 공통: "id"(파일 앞글자), "label"(출처 이름 — AI추천 카드에 보임), "max"(최대 장수).
 
 사용법 (Pillow 필요 → uv run -q --with pillow python ...):
@@ -103,7 +105,51 @@ def from_arena(j: dict) -> list[tuple[str, str]]:
     return out
 
 
-KINDS = {"page": from_page, "musinsa": from_musinsa, "arena": from_arena}
+def _nuxt(html_text: str):
+    """Nuxt 페이지의 __NUXT_DATA__(번호로 서로 가리키는 목록)를 보통 JSON으로 풀기."""
+    data = json.loads(re.search(r'<script[^>]*id="__NUXT_DATA__"[^>]*>(.*?)</script>', html_text, re.S).group(1))
+    wrap = {"ShallowReactive", "Reactive", "Ref", "ShallowRef", "EmptyRef", "EmptyShallowRef"}
+
+    def r(i, depth=0):
+        if depth > 40:
+            return None
+        v = data[i]
+        if isinstance(v, list):
+            if v and isinstance(v[0], str) and v[0] in wrap:
+                return r(v[1], depth + 1)
+            return [r(x, depth + 1) if isinstance(x, int) else x for x in v]
+        if isinstance(v, dict):
+            return {k: r(x, depth + 1) if isinstance(x, int) else x for k, x in v.items()}
+        return v
+    return r(0)
+
+
+def from_kream(j: dict) -> list[tuple[str, str]]:
+    """KREAM 스타일 태그 페이지(예: https://kream.co.kr/social/tags/어텀룩)의 첫 게시물 20개.
+    robots.txt는 모든 수집기 허용(/my·/history·/bridge 제외)이지만 서버가 브라우저가 아닌 이름엔 오류(500)를 줘서 브라우저 이름으로 접속.
+    사람이 찍힌 게시물(is_human_detected)만, 게시물의 첫 사진만."""
+    url = j["url"]
+    if "/social/tags/" in url:
+        head, tag = url.split("/social/tags/", 1)
+        url = f"{head}/social/tags/{urllib.parse.quote(urllib.parse.unquote(tag))}"
+    root = _nuxt(get(url).decode("utf-8", "ignore"))
+    items = (((root.get("pinia") or {}).get("social") or {}).get("tagFeeds") or {}).get("items") or []
+    out = []
+    for it in items:
+        p = it.get("social_post") or {}
+        imgs = p.get("images") or []
+        if not imgs or p.get("is_human_detected") is False:
+            continue
+        img = imgs[0].get("secure_url") or imgs[0].get("url")
+        tags = [((t.get("product") or {}).get("release") or {}).get("name") for t in imgs[0].get("product_tags") or []]
+        user = (p.get("social_user") or {}).get("nickname") or (p.get("social_user") or {}).get("user_name") or ""
+        KREAM_NOTE[f"https://kream.co.kr/social/posts/{p['id']}"] = {"user": user, "products": [t for t in tags if t]}
+        out.append((img, f"https://kream.co.kr/social/posts/{p['id']}"))
+    return out
+
+
+KREAM_NOTE: dict[str, dict] = {}   # 게시물 주소 → 작성자·태그된 상품 (manifest에 같이 저장 → 설명 쓸 때 참고)
+KINDS = {"page": from_page, "musinsa": from_musinsa, "arena": from_arena, "kream": from_kream}
 
 
 def run(jobs_path: Path) -> None:
@@ -139,7 +185,7 @@ def run(jobs_path: Path) -> None:
         with ThreadPoolExecutor(8) as ex:
             got = [r for r in ex.map(dl, enumerate(found, 1)) if r]
         for name, img, link in got:
-            man[name] = {"label": j["label"], "link": link, "img": img, "kind": j.get("kind", "page")}
+            man[name] = {"label": j["label"], "link": link, "img": img, "kind": j.get("kind", "page"), **KREAM_NOTE.get(link, {})}
         print(f"{j['id']}: 후보 {len(found)}개 중 {len(got)}장 받음 ({j['label']})")
     save_json(MANIFEST, man)
 

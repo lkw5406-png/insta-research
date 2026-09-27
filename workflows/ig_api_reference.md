@@ -35,6 +35,11 @@
    - **Are.na (`arena`)**: 핀터레스트 비슷한 무드보드, 공식 API(키 불필요). `--arena-search 검색어`로 채널 찾기.
      잘 맞은 채널: `fit-pics-n_s2rve1iky`(Fit pics, 가장 좋음), `menswear-s4sdko_jurw`, `throwing-fits`, `menswear-ihx8m3zkipe`.
      흑백 화보·옛 잡지 스캔·아트 채널(예: `menswear-xlanwsjtlrs`, `menswear-media-system`, `workwear-lookbook`, `artist-fits`)은 안 맞음.
+   - **KREAM 스타일 (`kream`)**: 한국 착용 후기. 태그 페이지 `https://kream.co.kr/social/tags/태그` (한 태그당 최신 약 20개, 사람이 찍힌 게시물만).
+     robots.txt는 전부 허용(/my·/history·/bridge 제외). 서버가 'Claude-User' 이름엔 오류(500)를 줘서 브라우저 이름으로 접속 → 사장님 요청 때만.
+     잘 맞은 태그: `워크자켓`, `와이드데님`, `시티보이룩`, `레더자켓`. 안 맞음: `미니멀룩`(거의 전부 AI 사진), `레이어드룩`·`남자코디`(카드뉴스·광고 많음).
+     ⚠️ KREAM도 **"AI로 제작한 이미지"** 표시(사진 오른쪽 아래)가 있으면 제외. 글자 얹은 카드뉴스·상품 광고도 제외.
+     출처(source)는 `KREAM 스타일 #태그`, 링크는 게시물 주소.
 2. `uv run -q --with pillow python tools/web_cands.py --jobs .tmp/jobs.json` → `--sheet 앞글자들` → 판독 이미지(`.tmp/cands/sheets/`)를
    **하나씩 Read로 보고** 고른다. 고른 것만 크게 모아 한 번 더 보고 설명·키워드를 쓴다. 한 쇼의 연속 사진은 하나만.
 3. `.tmp/ai_add.json` 작성 (형식은 `tools/ai_picks.py` 맨 위, via: 룩북/런웨이/스트릿) →
@@ -86,6 +91,7 @@
 - Graph API 버전(v25.0)이 종료되면 `tools/ig_api.py`의 `GRAPH` 주소 버전을 올림.
 
 ## 변경 기록
+- 2026-09-27: KREAM 스타일 28장(AI-0150~0177, 태그 10개·후보 173장). web_cands.py에 kream 종류 추가. #미니멀룩은 AI 사진이라 제외.
 - 2026-09-27: 2차 99장(AI-0051~0149): 무신사 스냅 12, Are.na 40, 잡지·런웨이 13, 1차 후보 재선별 34(화려한 무늬 바지 2장은 제외).
   후보 수집 도구 tools/web_cands.py(잡지·무신사·Are.na) 추가. 무신사 'AI로 생성' 사진 제외 규칙. 인스타 연결은 페이스북 페이지에 인스타 연결이
   Meta 보안 조치로 막혀 대기 중(오래가는 사용자 토큰은 저장됨 → 연결되면 --setup만 다시).
