@@ -10,6 +10,7 @@
   반영된 휴지통 사진은 모든 기기의 휴지통 탭에 보이고, 파일은 지우지 않음(복구 가능).
 - 사진마다 출처(인스타·핀터레스트 @아이디는 프로필 링크, 런웨이는 브랜드·시즌), 저장 날짜, 한 줄 설명, 키워드.
 - 걸러 보기: [전체|여성|남성] · 아이템·스타일·컬러·소재 · 출처 계정 · 기간(전체/이번 주/이번 달).
+  출처 버튼은 사진 4장 이상인 출처만 보임(MIN_SOURCE, 2026-09-27 사장님 요청). 적은 출처도 검색칸으로는 찾을 수 있음.
 - 기본(로컬): report/index.html 이 ../photos/ 원본 사진을 읽음 → 이 PC에서만 열림.
 - --publish: 깃허브 공개 링크용 docs/index.html + docs/img/(목록용 긴 변 480px) + docs/img/big/(눌렀을 때 확대용 1000px).
   (2026-09-27 사장님 요청: 눌렀을 때 더 크게 → 확대용 추가. 원본 캡처 전체는 여전히 비공개)
@@ -44,6 +45,7 @@ AI_PATH = DATA_DIR / "ai_picks.json"
 FIELDS = ["items", "styles", "colors", "materials", "details"]
 PUBLISH_MAX = 480  # --publish 때 목록에 쓰는 사진 긴 변(px)
 ZOOM_MAX = 1000    # 사진을 눌렀을 때 크게 보는 사진 긴 변(px)
+MIN_SOURCE = 4     # 출처 필터 버튼은 사진이 이 장수 이상인 출처만 (2026-09-27 사장님 요청: 3장 이하 숨김)
 
 
 def rows(publish: bool) -> list[dict]:
@@ -249,7 +251,8 @@ function render() {
     ['많이 나온 아이템', top('items')[0]], ['스타일', top('styles')[0]], ['컬러', top('colors')[0]]]
     .map(([k, v]) => `<div class="stat"><small>${k}</small><b>${esc(v)}</b></div>`).join('');
   $('#facets').innerHTML = ['items', 'styles', 'colors', 'materials', 'details', 'source'].map(f => {
-    const list = count(rows, f).slice(0, f === 'source' ? 30 : 18);
+    // 출처는 4장 이상인 것만 버튼으로 (2026-09-27 사장님: 3장 이하는 표시하지 말 것). 사진은 그대로 보임
+    const list = count(rows, f).filter(([, n]) => f !== 'source' || n >= D.minSource).slice(0, f === 'source' ? 30 : 18);
     if (!list.length) return '';
     return `<div class="facet"><span>${LBL[f]}</span><div class="chips">${list.map(([v, n]) => {
       const on = S.f && S.f.field === f && S.f.value === v;
@@ -339,7 +342,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--publish", action="store_true")
     a = ap.parse_args()
-    data = {"today": today_kst(), "rows": rows(a.publish), "swatch": SWATCH, "boards": {**ALL, **BOARDS, **EXTRA}}
+    data = {"today": today_kst(), "rows": rows(a.publish), "swatch": SWATCH, "boards": {**ALL, **BOARDS, **EXTRA}, "minSource": MIN_SOURCE}
     folder = DOCS_DIR if a.publish else REPORT_DIR
     folder.mkdir(exist_ok=True)
     out = folder / "index.html"
