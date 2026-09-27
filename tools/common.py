@@ -32,6 +32,52 @@ def today_kst() -> str:
     return datetime.now(KST).strftime("%Y-%m-%d")
 
 
+# 비밀 파일 — OneDrive 동기화를 피해 PC 사용자 폴더에 둠 (없으면 폴더 안 .env)
+ENV_PATH = Path.home() / ".secrets" / "insta-research.env"
+
+
+def env_path() -> Path:
+    return ENV_PATH if ENV_PATH.exists() or not (ROOT / ".env").exists() else ROOT / ".env"
+
+
+def load_env() -> None:
+    """비밀 파일의 '이름=값' 줄을 환경변수로 읽음. 이미 설정된 값은 덮어쓰지 않음."""
+    path = env_path()
+    if not path.exists():
+        return
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        value = value.strip().strip('"').strip("'")
+        if value:
+            os.environ.setdefault(key.strip(), value)
+
+
+def save_env(updates: dict[str, str | None]) -> None:
+    """비밀 파일에서 해당 이름의 값만 바꿈(None이면 줄 삭제). 설명 줄·다른 값은 그대로 둠."""
+    path = env_path()
+    lines = path.read_text(encoding="utf-8").splitlines() if path.exists() else []
+    out, done = [], set()
+    for line in lines:
+        key = line.split("=", 1)[0].strip() if "=" in line and not line.lstrip().startswith("#") else None
+        if key in updates:
+            done.add(key)
+            if updates[key] is not None:
+                out.append(f"{key}={updates[key]}")
+            continue
+        out.append(line)
+    out += [f"{k}={v}" for k, v in updates.items() if k not in done and v is not None]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(out) + "\n", encoding="utf-8")
+    for k, v in updates.items():
+        if v is None:
+            os.environ.pop(k, None)
+        else:
+            os.environ[k] = v
+
+
 def load_json(path: Path, default):
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else default
 

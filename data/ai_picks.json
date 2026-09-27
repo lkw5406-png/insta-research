@@ -1,0 +1,1480 @@
+{
+ "AI-0001": {
+  "code": "AI-0001",
+  "via": "룩북",
+  "source": "Graphpaper FW26 «FIELDWORK»",
+  "link": "https://hypebeast.com/2026/1/graphpaper-fall-winter-2026-collection-fiedworld-lookbook-info",
+  "photo": "photos/ai/AI-0001.jpg",
+  "image_key": "gp_08.jpg",
+  "gender": "남성",
+  "summary": "브라운 보아 블루종에 베이지 턱 와이드 팬츠. 회색 벽 앞 전신 컷",
+  "ref": "IG-0017",
+  "items": [
+   "봄버/항공점퍼",
+   "셔츠",
+   "와이드 팬츠"
+  ],
+  "styles": [
+   "워크웨어",
+   "오버사이즈",
+   "레이어드"
+  ],
+  "colors": [
+   "브라운/카멜",
+   "베이지/샌드"
+  ],
+  "materials": [
+   "플리스/보아",
+   "트윌/치노"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0002": {
+  "code": "AI-0002",
+  "via": "룩북",
+  "source": "Graphpaper FW26 «FIELDWORK»",
+  "link": "https://hypebeast.com/2026/1/graphpaper-fall-winter-2026-collection-fiedworld-lookbook-info",
+  "photo": "photos/ai/AI-0002.jpg",
+  "image_key": "gp_10.jpg",
+  "gender": "남성",
+  "summary": "베이지 셔츠 재킷 안에 네이비 셔츠, 차콜 울 와이드 슬랙스",
+  "ref": "IG-0038",
+  "items": [
+   "초어 재킷",
+   "셔츠",
+   "와이드 팬츠"
+  ],
+  "styles": [
+   "미니멀",
+   "레이어드",
+   "오버사이즈"
+  ],
+  "colors": [
+   "베이지/샌드",
+   "네이비",
+   "그레이/차콜"
+  ],
+  "materials": [
+   "울"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0003": {
+  "code": "AI-0003",
+  "via": "룩북",
+  "source": "Graphpaper FW26 «FIELDWORK»",
+  "link": "https://hypebeast.com/2026/1/graphpaper-fall-winter-2026-collection-fiedworld-lookbook-info",
+  "photo": "photos/ai/AI-0003.jpg",
+  "image_key": "gp_16.jpg",
+  "gender": "남성",
+  "summary": "체크 셔츠를 겉옷처럼 걸치고 브라운 셔츠 레이어드, 세이지 카고",
+  "ref": "IG-0066",
+  "items": [
+   "셔츠",
+   "카고 팬츠"
+  ],
+  "styles": [
+   "워크웨어",
+   "레이어드"
+  ],
+  "colors": [
+   "네이비",
+   "브라운/카멜",
+   "카키/올리브"
+  ],
+  "materials": [
+   "플란넬"
+  ],
+  "details": [
+   "체크/타탄",
+   "포켓/유틸리티"
+  ],
+  "added": "2026-09-27"
+ },
+ "AI-0004": {
+  "code": "AI-0004",
+  "via": "룩북",
+  "source": "Graphpaper FW26 «FIELDWORK»",
+  "link": "https://hypebeast.com/2026/1/graphpaper-fall-winter-2026-collection-fiedworld-lookbook-info",
+  "photo": "photos/ai/AI-0004.jpg",
+  "image_key": "gp_18.jpg",
+  "gender": "남성",
+  "summary": "브라운 봄버와 벌룬 팬츠 셋업, 그레이 이너",
+  "ref": "IG-0036",
+  "items": [
+   "봄버/항공점퍼",
+   "셋업/수트",
+   "와이드 팬츠"
+  ],
+  "styles": [
+   "밀리터리",
+   "오버사이즈"
+  ],
+  "colors": [
+   "브라운/카멜",
+   "그레이/차콜"
+  ],
+  "materials": [],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0005": {
+  "code": "AI-0005",
+  "via": "룩북",
+  "source": "Graphpaper FW26 «FIELDWORK»",
+  "link": "https://hypebeast.com/2026/1/graphpaper-fall-winter-2026-collection-fiedworld-lookbook-info",
+  "photo": "photos/ai/AI-0005.jpg",
+  "image_key": "gp_22.jpg",
+  "gender": "남성",
+  "summary": "블랙 레더 재킷에 베이지 셔츠, 스톤 컬러 와이드 팬츠",
+  "ref": "IG-0021",
+  "items": [
+   "가죽 재킷",
+   "셔츠",
+   "와이드 팬츠"
+  ],
+  "styles": [
+   "미니멀",
+   "레이어드"
+  ],
+  "colors": [
+   "블랙",
+   "베이지/샌드"
+  ],
+  "materials": [
+   "가죽"
+  ],
+  "details": [
+   "벨트/웨이스트"
+  ],
+  "added": "2026-09-27"
+ },
+ "AI-0006": {
+  "code": "AI-0006",
+  "via": "룩북",
+  "source": "Graphpaper FW26 «FIELDWORK»",
+  "link": "https://hypebeast.com/2026/1/graphpaper-fall-winter-2026-collection-fiedworld-lookbook-info",
+  "photo": "photos/ai/AI-0006.jpg",
+  "image_key": "gp_29.jpg",
+  "gender": "남성",
+  "summary": "토프 블루종과 터틀넥, 그레이 벌룬 와이드 팬츠",
+  "ref": "IG-0049",
+  "items": [
+   "필드/워크 재킷",
+   "터틀넥",
+   "와이드 팬츠"
+  ],
+  "styles": [
+   "워크웨어",
+   "오버사이즈",
+   "레이어드"
+  ],
+  "colors": [
+   "베이지/샌드",
+   "그레이/차콜"
+  ],
+  "materials": [
+   "울"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0007": {
+  "code": "AI-0007",
+  "via": "룩북",
+  "source": "Graphpaper FW26 «FIELDWORK»",
+  "link": "https://hypebeast.com/2026/1/graphpaper-fall-winter-2026-collection-fiedworld-lookbook-info",
+  "photo": "photos/ai/AI-0007.jpg",
+  "image_key": "gp_39.jpg",
+  "gender": "여성",
+  "summary": "블랙 레더 재킷, 브라운 니트, 블랙 와이드 팬츠",
+  "ref": "IG-0025",
+  "items": [
+   "가죽 재킷",
+   "니트/스웨터",
+   "와이드 팬츠"
+  ],
+  "styles": [
+   "레이어드",
+   "오버사이즈"
+  ],
+  "colors": [
+   "블랙",
+   "브라운/카멜"
+  ],
+  "materials": [
+   "가죽",
+   "니트"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0008": {
+  "code": "AI-0008",
+  "via": "룩북",
+  "source": "Carhartt WIP FW26",
+  "link": "https://hypebeast.com/2026/8/carhartt-wip-fall-winter-2026-collection-lookbook-release-info",
+  "photo": "photos/ai/AI-0008.jpg",
+  "image_key": "cw_03.jpg",
+  "gender": "남성",
+  "summary": "그레이 MA-1 안에 버건디 셔츠, 워싱 연청 와이드 데님",
+  "ref": "IG-0031",
+  "items": [
+   "봄버/항공점퍼",
+   "셔츠",
+   "데님 팬츠"
+  ],
+  "styles": [
+   "워크웨어",
+   "오버사이즈",
+   "레이어드"
+  ],
+  "colors": [
+   "그레이/차콜",
+   "레드/버건디",
+   "블루/인디고"
+  ],
+  "materials": [
+   "나일론",
+   "데님"
+  ],
+  "details": [
+   "워싱/디스트레스드"
+  ],
+  "added": "2026-09-27"
+ },
+ "AI-0009": {
+  "code": "AI-0009",
+  "via": "룩북",
+  "source": "Carhartt WIP FW26",
+  "link": "https://hypebeast.com/2026/8/carhartt-wip-fall-winter-2026-collection-lookbook-release-info",
+  "photo": "photos/ai/AI-0009.jpg",
+  "image_key": "cw_07.jpg",
+  "gender": "남성",
+  "summary": "데님 디트로이트 재킷에 후드와 비니 레이어드",
+  "ref": "IG-0035",
+  "items": [
+   "데님 재킷",
+   "후디/스웻셔츠",
+   "비니"
+  ],
+  "styles": [
+   "워크웨어",
+   "레이어드",
+   "스트리트"
+  ],
+  "colors": [
+   "블루/인디고",
+   "레드/버건디",
+   "네이비"
+  ],
+  "materials": [
+   "데님"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0010": {
+  "code": "AI-0010",
+  "via": "룩북",
+  "source": "Carhartt WIP FW26",
+  "link": "https://hypebeast.com/2026/8/carhartt-wip-fall-winter-2026-collection-lookbook-release-info",
+  "photo": "photos/ai/AI-0010.jpg",
+  "image_key": "cw_10.jpg",
+  "gender": "남성",
+  "summary": "블랙 레더 재킷, 다크 팬츠. 우드 패널 실내",
+  "ref": "IG-0061",
+  "items": [
+   "가죽 재킷",
+   "와이드 팬츠"
+  ],
+  "styles": [
+   "워크웨어",
+   "빈티지/레트로"
+  ],
+  "colors": [
+   "블랙"
+  ],
+  "materials": [
+   "가죽"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0011": {
+  "code": "AI-0011",
+  "via": "룩북",
+  "source": "Carhartt WIP FW26",
+  "link": "https://hypebeast.com/2026/8/carhartt-wip-fall-winter-2026-collection-lookbook-release-info",
+  "photo": "photos/ai/AI-0011.jpg",
+  "image_key": "cw_17.jpg",
+  "gender": "남성",
+  "summary": "블랙 데님 트러커 안에 그레이 후드",
+  "ref": "IG-0074",
+  "items": [
+   "데님 재킷",
+   "후디/스웻셔츠"
+  ],
+  "styles": [
+   "레이어드",
+   "스트리트"
+  ],
+  "colors": [
+   "블랙",
+   "그레이/차콜"
+  ],
+  "materials": [
+   "데님",
+   "테리/스웨트"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0012": {
+  "code": "AI-0012",
+  "via": "룩북",
+  "source": "Norse Projects FW26",
+  "link": "https://hypebeast.com/2026/8/norse-projects-fw27-lookbook",
+  "photo": "photos/ai/AI-0012.jpg",
+  "image_key": "np_05.jpg",
+  "gender": "남성",
+  "summary": "네이비 재킷에 버건디 칼라, 후드 레이어드, 베이지 와이드 치노",
+  "ref": "IG-0043",
+  "items": [
+   "필드/워크 재킷",
+   "후디/스웻셔츠",
+   "와이드 팬츠",
+   "스니커즈"
+  ],
+  "styles": [
+   "레이어드",
+   "워크웨어"
+  ],
+  "colors": [
+   "네이비",
+   "레드/버건디",
+   "베이지/샌드"
+  ],
+  "materials": [
+   "트윌/치노"
+  ],
+  "details": [
+   "배색"
+  ],
+  "added": "2026-09-27"
+ },
+ "AI-0013": {
+  "code": "AI-0013",
+  "via": "룩북",
+  "source": "Norse Projects FW26",
+  "link": "https://hypebeast.com/2026/8/norse-projects-fw27-lookbook",
+  "photo": "photos/ai/AI-0013.jpg",
+  "image_key": "np_11.jpg",
+  "gender": "남성",
+  "summary": "블랙 니트 집업, 차콜 와이드 슬랙스. 우드 벽 실내",
+  "ref": "IG-0012",
+  "items": [
+   "카디건",
+   "슬랙스/트라우저",
+   "와이드 팬츠"
+  ],
+  "styles": [
+   "미니멀"
+  ],
+  "colors": [
+   "블랙",
+   "그레이/차콜"
+  ],
+  "materials": [
+   "니트",
+   "울"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0014": {
+  "code": "AI-0014",
+  "via": "룩북",
+  "source": "Norse Projects FW26",
+  "link": "https://hypebeast.com/2026/8/norse-projects-fw27-lookbook",
+  "photo": "photos/ai/AI-0014.jpg",
+  "image_key": "np_12.jpg",
+  "gender": "남성",
+  "summary": "브라운 셔츠 재킷에 흰 티, 브라운 와이드 팬츠",
+  "ref": "IG-0041",
+  "items": [
+   "초어 재킷",
+   "티셔츠",
+   "와이드 팬츠",
+   "벨트"
+  ],
+  "styles": [
+   "미니멀",
+   "레이어드"
+  ],
+  "colors": [
+   "브라운/카멜",
+   "화이트"
+  ],
+  "materials": [],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0015": {
+  "code": "AI-0015",
+  "via": "룩북",
+  "source": "Norse Projects FW26",
+  "link": "https://hypebeast.com/2026/8/norse-projects-fw27-lookbook",
+  "photo": "photos/ai/AI-0015.jpg",
+  "image_key": "np_13.jpg",
+  "gender": "남성",
+  "summary": "브라운 니트 블루종, 그레이 턱 팬츠. 바닷가 자연광",
+  "ref": "IG-0017",
+  "items": [
+   "니트/스웨터",
+   "슬랙스/트라우저"
+  ],
+  "styles": [
+   "미니멀",
+   "클래식 남성복"
+  ],
+  "colors": [
+   "브라운/카멜",
+   "그레이/차콜"
+  ],
+  "materials": [
+   "니트"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0016": {
+  "code": "AI-0016",
+  "via": "룩북",
+  "source": "Uniqlo U FW26",
+  "link": "https://hypebeast.com/2026/8/christophe-lemaire-sarah-linh-tran-uniqlo-u-10th-anniversary-final-capsule-lookbook-release-info",
+  "photo": "photos/ai/AI-0016.jpg",
+  "image_key": "uu_07.jpg",
+  "gender": "남성",
+  "summary": "차콜 니트 카디건 톤온톤, 블랙 와이드 팬츠",
+  "ref": "IG-0012",
+  "items": [
+   "카디건",
+   "니트/스웨터",
+   "와이드 팬츠"
+  ],
+  "styles": [
+   "미니멀"
+  ],
+  "colors": [
+   "그레이/차콜",
+   "블랙"
+  ],
+  "materials": [
+   "니트"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0017": {
+  "code": "AI-0017",
+  "via": "룩북",
+  "source": "Uniqlo U FW26",
+  "link": "https://hypebeast.com/2026/8/christophe-lemaire-sarah-linh-tran-uniqlo-u-10th-anniversary-final-capsule-lookbook-release-info",
+  "photo": "photos/ai/AI-0017.jpg",
+  "image_key": "uu_10.jpg",
+  "gender": "남성",
+  "summary": "카멜 울 셔츠 재킷에 레더 슬링백",
+  "ref": "IG-0024",
+  "items": [
+   "초어 재킷",
+   "셔츠",
+   "크로스백"
+  ],
+  "styles": [
+   "미니멀",
+   "레이어드"
+  ],
+  "colors": [
+   "브라운/카멜",
+   "블랙"
+  ],
+  "materials": [
+   "울",
+   "가죽"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0018": {
+  "code": "AI-0018",
+  "via": "룩북",
+  "source": "Uniqlo U FW26",
+  "link": "https://hypebeast.com/2026/8/christophe-lemaire-sarah-linh-tran-uniqlo-u-10th-anniversary-final-capsule-lookbook-release-info",
+  "photo": "photos/ai/AI-0018.jpg",
+  "image_key": "uu_13.jpg",
+  "gender": "남성",
+  "summary": "브라운 블루종에 크림 셔츠, 차콜 와이드 팬츠",
+  "ref": "IG-0041",
+  "items": [
+   "필드/워크 재킷",
+   "셔츠",
+   "와이드 팬츠"
+  ],
+  "styles": [
+   "미니멀",
+   "레이어드"
+  ],
+  "colors": [
+   "브라운/카멜",
+   "아이보리/크림",
+   "그레이/차콜"
+  ],
+  "materials": [],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0019": {
+  "code": "AI-0019",
+  "via": "룩북",
+  "source": "Uniqlo U FW26",
+  "link": "https://hypebeast.com/2026/8/christophe-lemaire-sarah-linh-tran-uniqlo-u-10th-anniversary-final-capsule-lookbook-release-info",
+  "photo": "photos/ai/AI-0019.jpg",
+  "image_key": "uu_14.jpg",
+  "gender": "남성",
+  "summary": "블랙 아우터 안에 레드 셔츠 한 점 포인트",
+  "ref": "IG-0029",
+  "items": [
+   "코트",
+   "셔츠",
+   "와이드 팬츠"
+  ],
+  "styles": [
+   "미니멀",
+   "레이어드"
+  ],
+  "colors": [
+   "블랙",
+   "레드/버건디"
+  ],
+  "materials": [],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0020": {
+  "code": "AI-0020",
+  "via": "룩북",
+  "source": "Uniqlo U FW26",
+  "link": "https://hypebeast.com/2026/8/christophe-lemaire-sarah-linh-tran-uniqlo-u-10th-anniversary-final-capsule-lookbook-release-info",
+  "photo": "photos/ai/AI-0020.jpg",
+  "image_key": "uu_15.jpg",
+  "gender": "남성",
+  "summary": "올리브 블루종, 크림 셔츠, 블랙 팬츠",
+  "ref": "IG-0007",
+  "items": [
+   "필드/워크 재킷",
+   "셔츠",
+   "슬랙스/트라우저"
+  ],
+  "styles": [
+   "미니멀",
+   "레이어드"
+  ],
+  "colors": [
+   "카키/올리브",
+   "아이보리/크림",
+   "블랙"
+  ],
+  "materials": [],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0021": {
+  "code": "AI-0021",
+  "via": "룩북",
+  "source": "Uniqlo U FW26",
+  "link": "https://hypebeast.com/2026/8/christophe-lemaire-sarah-linh-tran-uniqlo-u-10th-anniversary-final-capsule-lookbook-release-info",
+  "photo": "photos/ai/AI-0021.jpg",
+  "image_key": "uu_17.jpg",
+  "gender": "남성",
+  "summary": "레더 블루종 두 가지 컬러 제품 컷",
+  "ref": "IG-0003",
+  "items": [
+   "가죽 재킷"
+  ],
+  "styles": [
+   "미니멀"
+  ],
+  "colors": [
+   "브라운/카멜",
+   "그레이/차콜"
+  ],
+  "materials": [
+   "가죽"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0022": {
+  "code": "AI-0022",
+  "via": "런웨이",
+  "source": "Our Legacy FW26 «Just Clothes»",
+  "link": "https://www.ourlegacy.com/fall-2026",
+  "photo": "photos/ai/AI-0022.jpg",
+  "image_key": "ol_08.jpg",
+  "gender": "남성",
+  "summary": "블랙 레더 라이더 아래 브라운 블레이저, 브라운 와이드 팬츠",
+  "ref": "IG-0027",
+  "items": [
+   "가죽 재킷",
+   "블레이저/테일러드 재킷",
+   "와이드 팬츠"
+  ],
+  "styles": [
+   "레이어드",
+   "빈티지/레트로"
+  ],
+  "colors": [
+   "블랙",
+   "브라운/카멜"
+  ],
+  "materials": [
+   "가죽"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0023": {
+  "code": "AI-0023",
+  "via": "런웨이",
+  "source": "Our Legacy FW26 «Just Clothes»",
+  "link": "https://www.ourlegacy.com/fall-2026",
+  "photo": "photos/ai/AI-0023.jpg",
+  "image_key": "ol_20.jpg",
+  "gender": "남성",
+  "summary": "블랙 집업 재킷, 워싱 연청 데님, 토트",
+  "ref": "IG-0023",
+  "items": [
+   "필드/워크 재킷",
+   "데님 팬츠",
+   "토트백"
+  ],
+  "styles": [
+   "미니멀"
+  ],
+  "colors": [
+   "블랙",
+   "블루/인디고"
+  ],
+  "materials": [
+   "데님"
+  ],
+  "details": [
+   "워싱/디스트레스드"
+  ],
+  "added": "2026-09-27"
+ },
+ "AI-0024": {
+  "code": "AI-0024",
+  "via": "런웨이",
+  "source": "Our Legacy FW26 «Just Clothes»",
+  "link": "https://www.ourlegacy.com/fall-2026",
+  "photo": "photos/ai/AI-0024.jpg",
+  "image_key": "ol_24.jpg",
+  "gender": "남성",
+  "summary": "퍼 칼라 레더 재킷, 토프 와이드 트라우저",
+  "ref": "IG-0010",
+  "items": [
+   "가죽 재킷",
+   "와이드 팬츠"
+  ],
+  "styles": [
+   "빈티지/레트로"
+  ],
+  "colors": [
+   "블랙",
+   "브라운/카멜"
+  ],
+  "materials": [
+   "가죽",
+   "퍼/시어링"
+  ],
+  "details": [
+   "퍼 트림"
+  ],
+  "added": "2026-09-27"
+ },
+ "AI-0025": {
+  "code": "AI-0025",
+  "via": "런웨이",
+  "source": "Our Legacy FW26 «Just Clothes»",
+  "link": "https://www.ourlegacy.com/fall-2026",
+  "photo": "photos/ai/AI-0025.jpg",
+  "image_key": "ol_39.jpg",
+  "gender": "남성",
+  "summary": "블랙 니트 아래 블루 셔츠, 미드 블루 데님",
+  "ref": "IG-0013",
+  "items": [
+   "니트/스웨터",
+   "셔츠",
+   "데님 팬츠",
+   "벨트"
+  ],
+  "styles": [
+   "미니멀",
+   "레이어드"
+  ],
+  "colors": [
+   "블랙",
+   "블루/인디고"
+  ],
+  "materials": [
+   "니트",
+   "데님"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0026": {
+  "code": "AI-0026",
+  "via": "런웨이",
+  "source": "Sunflower FW26 (CPHFW)",
+  "link": "https://www.voguescandinavia.com/articles/sunflower-fall-winter-2026-collection",
+  "photo": "photos/ai/AI-0026.jpg",
+  "image_key": "sfv_03.jpg",
+  "gender": "남성",
+  "summary": "그레이 오버사이즈 블레이저, 체크 셔츠, 연청 데님",
+  "ref": "IG-0045",
+  "items": [
+   "블레이저/테일러드 재킷",
+   "셔츠",
+   "데님 팬츠"
+  ],
+  "styles": [
+   "오버사이즈",
+   "레이어드"
+  ],
+  "colors": [
+   "그레이/차콜",
+   "레드/버건디",
+   "블루/인디고"
+  ],
+  "materials": [
+   "데님"
+  ],
+  "details": [
+   "체크/타탄"
+  ],
+  "added": "2026-09-27"
+ },
+ "AI-0027": {
+  "code": "AI-0027",
+  "via": "런웨이",
+  "source": "Sunflower FW26 (CPHFW)",
+  "link": "https://www.voguescandinavia.com/articles/sunflower-fall-winter-2026-collection",
+  "photo": "photos/ai/AI-0027.jpg",
+  "image_key": "sfv_10.jpg",
+  "gender": "남성",
+  "summary": "블랙 시어링 레더 재킷, 올리브 터틀넥, 더티 워싱 데님",
+  "ref": "IG-0027",
+  "items": [
+   "시어링/무스탕",
+   "터틀넥",
+   "데님 팬츠"
+  ],
+  "styles": [
+   "빈티지/레트로",
+   "레이어드"
+  ],
+  "colors": [
+   "블랙",
+   "카키/올리브"
+  ],
+  "materials": [
+   "가죽",
+   "퍼/시어링",
+   "데님"
+  ],
+  "details": [
+   "워싱/디스트레스드"
+  ],
+  "added": "2026-09-27"
+ },
+ "AI-0028": {
+  "code": "AI-0028",
+  "via": "런웨이",
+  "source": "Sunflower FW26 (CPHFW)",
+  "link": "https://www.voguescandinavia.com/articles/sunflower-fall-winter-2026-collection",
+  "photo": "photos/ai/AI-0028.jpg",
+  "image_key": "sfv_31.jpg",
+  "gender": "남성",
+  "summary": "카멜 칼라 레더 재킷에 흰 탱크, 연청 와이드 데님",
+  "ref": "IG-0055",
+  "items": [
+   "가죽 재킷",
+   "탱크톱/캐미솔",
+   "데님 팬츠"
+  ],
+  "styles": [
+   "빈티지/레트로"
+  ],
+  "colors": [
+   "블랙",
+   "브라운/카멜",
+   "블루/인디고"
+  ],
+  "materials": [
+   "가죽",
+   "데님"
+  ],
+  "details": [
+   "배색"
+  ],
+  "added": "2026-09-27"
+ },
+ "AI-0029": {
+  "code": "AI-0029",
+  "via": "런웨이",
+  "source": "Sunflower FW26 (CPHFW)",
+  "link": "https://www.voguescandinavia.com/articles/sunflower-fall-winter-2026-collection",
+  "photo": "photos/ai/AI-0029.jpg",
+  "image_key": "sfv_38.jpg",
+  "gender": "남성",
+  "summary": "카멜 니트에 셔츠 칼라를 겹치고 생지 데님",
+  "ref": "IG-0006",
+  "items": [
+   "니트/스웨터",
+   "셔츠",
+   "데님 팬츠"
+  ],
+  "styles": [
+   "클래식 남성복",
+   "레이어드"
+  ],
+  "colors": [
+   "브라운/카멜",
+   "네이비"
+  ],
+  "materials": [
+   "니트",
+   "데님"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0030": {
+  "code": "AI-0030",
+  "via": "런웨이",
+  "source": "Lemaire FW26",
+  "link": "https://hypebeast.com/2026/1/lemaire-fall-winter-2026-paris-fashion-week-runway-collection",
+  "photo": "photos/ai/AI-0030.jpg",
+  "image_key": "lem_30.jpg",
+  "gender": "남성",
+  "summary": "그레이 레더 재킷 셋업, 브라운 로퍼",
+  "ref": "IG-0017",
+  "items": [
+   "가죽 재킷",
+   "셋업/수트",
+   "로퍼"
+  ],
+  "styles": [
+   "미니멀"
+  ],
+  "colors": [
+   "그레이/차콜",
+   "브라운/카멜"
+  ],
+  "materials": [
+   "가죽"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0031": {
+  "code": "AI-0031",
+  "via": "런웨이",
+  "source": "Lemaire FW26",
+  "link": "https://hypebeast.com/2026/1/lemaire-fall-winter-2026-paris-fashion-week-runway-collection",
+  "photo": "photos/ai/AI-0031.jpg",
+  "image_key": "lem_33.jpg",
+  "gender": "남성",
+  "summary": "브라운 퀼팅 블루종, 다크 레더 팬츠",
+  "ref": "IG-0041",
+  "items": [
+   "봄버/항공점퍼",
+   "와이드 팬츠"
+  ],
+  "styles": [
+   "미니멀",
+   "빈티지/레트로"
+  ],
+  "colors": [
+   "브라운/카멜",
+   "블랙"
+  ],
+  "materials": [
+   "퀼팅",
+   "가죽"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0032": {
+  "code": "AI-0032",
+  "via": "룩북",
+  "source": "Studio Nicholson Fall 2026",
+  "link": "https://hypebeast.com/2026/6/studio-nicholson-fall-2026-collection-lookbooks-release-info",
+  "photo": "photos/ai/AI-0032.jpg",
+  "image_key": "sn_07.jpg",
+  "gender": "남성",
+  "summary": "그레이 블레이저, 네이비 셔츠, 인디고 데님. 실내 자연광",
+  "ref": "IG-0026",
+  "items": [
+   "블레이저/테일러드 재킷",
+   "셔츠",
+   "데님 팬츠"
+  ],
+  "styles": [
+   "미니멀",
+   "레이어드"
+  ],
+  "colors": [
+   "그레이/차콜",
+   "네이비",
+   "블루/인디고"
+  ],
+  "materials": [
+   "데님"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0033": {
+  "code": "AI-0033",
+  "via": "룩북",
+  "source": "Studio Nicholson Fall 2026",
+  "link": "https://hypebeast.com/2026/6/studio-nicholson-fall-2026-collection-lookbooks-release-info",
+  "photo": "photos/ai/AI-0033.jpg",
+  "image_key": "sn_11.jpg",
+  "gender": "남성",
+  "summary": "블랙 니트, 올리브 와이드 치노. 창가 자연광",
+  "ref": "IG-0008",
+  "items": [
+   "니트/스웨터",
+   "와이드 팬츠",
+   "벨트"
+  ],
+  "styles": [
+   "미니멀"
+  ],
+  "colors": [
+   "블랙",
+   "카키/올리브"
+  ],
+  "materials": [
+   "니트",
+   "트윌/치노"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0034": {
+  "code": "AI-0034",
+  "via": "룩북",
+  "source": "Studio Nicholson Fall 2026",
+  "link": "https://hypebeast.com/2026/6/studio-nicholson-fall-2026-collection-lookbooks-release-info",
+  "photo": "photos/ai/AI-0034.jpg",
+  "image_key": "sn_22.jpg",
+  "gender": "남성",
+  "summary": "네이비 코트 안 블루 셔츠 포인트, 블랙 와이드 팬츠",
+  "ref": "IG-0028",
+  "items": [
+   "코트",
+   "셔츠",
+   "와이드 팬츠"
+  ],
+  "styles": [
+   "미니멀",
+   "레이어드"
+  ],
+  "colors": [
+   "네이비",
+   "블루/인디고",
+   "블랙"
+  ],
+  "materials": [],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0035": {
+  "code": "AI-0035",
+  "via": "룩북",
+  "source": "Kaptain Sunshine FW26",
+  "link": "https://hypebeast.com/pt/2026/8/kaptain-sunshine-fall-winter-2026-collection-lookbook",
+  "photo": "photos/ai/AI-0035.jpg",
+  "image_key": "ks_13.jpg",
+  "gender": "남성",
+  "summary": "네이비 워크 재킷 셋업 전신 컷",
+  "ref": "IG-0036",
+  "items": [
+   "필드/워크 재킷",
+   "셋업/수트",
+   "더비/옥스퍼드"
+  ],
+  "styles": [
+   "미니멀",
+   "워크웨어"
+  ],
+  "colors": [
+   "네이비"
+  ],
+  "materials": [],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0036": {
+  "code": "AI-0036",
+  "via": "룩북",
+  "source": "Kaptain Sunshine FW26",
+  "link": "https://hypebeast.com/pt/2026/8/kaptain-sunshine-fall-winter-2026-collection-lookbook",
+  "photo": "photos/ai/AI-0036.jpg",
+  "image_key": "ks_16.jpg",
+  "gender": "남성",
+  "summary": "블랙 집업 재킷, 네이비 와이드 팬츠, 로퍼",
+  "ref": "IG-0034",
+  "items": [
+   "필드/워크 재킷",
+   "와이드 팬츠",
+   "로퍼"
+  ],
+  "styles": [
+   "미니멀"
+  ],
+  "colors": [
+   "블랙",
+   "네이비"
+  ],
+  "materials": [],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0037": {
+  "code": "AI-0037",
+  "via": "룩북",
+  "source": "daisuke tanabe FW26",
+  "link": "https://hypebeast.com/2026/2/daisuke-tanabe-fall-winter-2026-collection-lookbook-info",
+  "photo": "photos/ai/AI-0037.jpg",
+  "image_key": "dt_07.jpg",
+  "gender": "남성",
+  "summary": "블루그레이 레더 라이더, 투톤 와이드 팬츠",
+  "ref": "IG-0058",
+  "items": [
+   "가죽 재킷",
+   "와이드 팬츠"
+  ],
+  "styles": [
+   "미니멀",
+   "빈티지/레트로"
+  ],
+  "colors": [
+   "블루/인디고",
+   "그레이/차콜"
+  ],
+  "materials": [
+   "가죽"
+  ],
+  "details": [
+   "배색"
+  ],
+  "added": "2026-09-27"
+ },
+ "AI-0038": {
+  "code": "AI-0038",
+  "via": "룩북",
+  "source": "daisuke tanabe FW26",
+  "link": "https://hypebeast.com/2026/2/daisuke-tanabe-fall-winter-2026-collection-lookbook-info",
+  "photo": "photos/ai/AI-0038.jpg",
+  "image_key": "dt_09.jpg",
+  "gender": "남성",
+  "summary": "올리브 필드 재킷에 셔츠 레이어드, 카키 카고",
+  "ref": "IG-0062",
+  "items": [
+   "필드/워크 재킷",
+   "셔츠",
+   "카고 팬츠"
+  ],
+  "styles": [
+   "밀리터리",
+   "레이어드"
+  ],
+  "colors": [
+   "카키/올리브",
+   "화이트"
+  ],
+  "materials": [],
+  "details": [
+   "포켓/유틸리티"
+  ],
+  "added": "2026-09-27"
+ },
+ "AI-0039": {
+  "code": "AI-0039",
+  "via": "룩북",
+  "source": "nonnative FW26",
+  "link": "https://hypebeast.com/2026/7/nonnative-fall-winter-2026-collection-lookbook-info",
+  "photo": "photos/ai/AI-0039.jpg",
+  "image_key": "nn_09.jpg",
+  "gender": "남성",
+  "summary": "블랙 레더 봄버 아래 데님 셔츠",
+  "ref": "IG-0008",
+  "items": [
+   "가죽 재킷",
+   "봄버/항공점퍼",
+   "셔츠"
+  ],
+  "styles": [
+   "밀리터리",
+   "레이어드"
+  ],
+  "colors": [
+   "블랙",
+   "블루/인디고"
+  ],
+  "materials": [
+   "가죽",
+   "데님"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0040": {
+  "code": "AI-0040",
+  "via": "룩북",
+  "source": "nonnative FW26",
+  "link": "https://hypebeast.com/2026/7/nonnative-fall-winter-2026-collection-lookbook-info",
+  "photo": "photos/ai/AI-0040.jpg",
+  "image_key": "nn_11.jpg",
+  "gender": "남성",
+  "summary": "레더 재킷 안에 체크 셔츠와 흰 티",
+  "ref": "IG-0066",
+  "items": [
+   "가죽 재킷",
+   "셔츠",
+   "티셔츠"
+  ],
+  "styles": [
+   "레이어드"
+  ],
+  "colors": [
+   "블랙",
+   "그레이/차콜",
+   "화이트"
+  ],
+  "materials": [
+   "가죽"
+  ],
+  "details": [
+   "체크/타탄"
+  ],
+  "added": "2026-09-27"
+ },
+ "AI-0041": {
+  "code": "AI-0041",
+  "via": "스트릿",
+  "source": "Paris Men's FW26 스트릿",
+  "link": "https://hypebeast.com/2026/1/paris-fashion-week-mens-fw26-street-style",
+  "photo": "photos/ai/AI-0041.jpg",
+  "image_key": "pfw_12.jpg",
+  "gender": "남성",
+  "summary": "브라운 스웨이드 시어링 재킷, 카멜 와이드 치노",
+  "ref": "IG-0017",
+  "items": [
+   "시어링/무스탕",
+   "셔츠",
+   "와이드 팬츠"
+  ],
+  "styles": [
+   "빈티지/레트로",
+   "클래식 남성복"
+  ],
+  "colors": [
+   "브라운/카멜",
+   "베이지/샌드"
+  ],
+  "materials": [
+   "스웨이드",
+   "퍼/시어링",
+   "트윌/치노"
+  ],
+  "details": [
+   "퍼 트림"
+  ],
+  "added": "2026-09-27"
+ },
+ "AI-0042": {
+  "code": "AI-0042",
+  "via": "스트릿",
+  "source": "Paris Men's FW26 스트릿",
+  "link": "https://hypebeast.com/2026/1/paris-fashion-week-mens-fw26-street-style",
+  "photo": "photos/ai/AI-0042.jpg",
+  "image_key": "pfw_21.jpg",
+  "gender": "남성",
+  "summary": "올리브 플라이트 재킷, 블랙 팬츠, 볼캡",
+  "ref": "IG-0022",
+  "items": [
+   "봄버/항공점퍼",
+   "슬랙스/트라우저",
+   "모자/볼캡"
+  ],
+  "styles": [
+   "밀리터리",
+   "빈티지/레트로"
+  ],
+  "colors": [
+   "카키/올리브",
+   "블랙"
+  ],
+  "materials": [],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0043": {
+  "code": "AI-0043",
+  "via": "스트릿",
+  "source": "Paris Men's FW26 스트릿",
+  "link": "https://hypebeast.com/2026/1/paris-fashion-week-mens-fw26-street-style",
+  "photo": "photos/ai/AI-0043.jpg",
+  "image_key": "pfw_27.jpg",
+  "gender": "남성",
+  "summary": "레더 재킷 안에 데님 재킷, 연청 데님과 부츠",
+  "ref": "IG-0027",
+  "items": [
+   "가죽 재킷",
+   "데님 재킷",
+   "데님 팬츠",
+   "부츠"
+  ],
+  "styles": [
+   "레이어드",
+   "빈티지/레트로"
+  ],
+  "colors": [
+   "블랙",
+   "블루/인디고"
+  ],
+  "materials": [
+   "가죽",
+   "데님"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0044": {
+  "code": "AI-0044",
+  "via": "스트릿",
+  "source": "Paris Men's FW26 스트릿",
+  "link": "https://hypebeast.com/2026/1/paris-fashion-week-mens-fw26-street-style",
+  "photo": "photos/ai/AI-0044.jpg",
+  "image_key": "pfw_37.jpg",
+  "gender": "남성",
+  "summary": "데님 재킷에 노르딕 니트, 크림 코듀로이",
+  "ref": "IG-0046",
+  "items": [
+   "데님 재킷",
+   "니트/스웨터",
+   "와이드 팬츠",
+   "크로스백"
+  ],
+  "styles": [
+   "레이어드",
+   "빈티지/레트로"
+  ],
+  "colors": [
+   "블루/인디고",
+   "베이지/샌드"
+  ],
+  "materials": [
+   "데님",
+   "코듀로이",
+   "니트"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0045": {
+  "code": "AI-0045",
+  "via": "스트릿",
+  "source": "Tokyo FW26 스트릿",
+  "link": "https://hypebeast.com/2026/3/tokyo-fashion-week-fw26-street-style",
+  "photo": "photos/ai/AI-0045.jpg",
+  "image_key": "tok_08.jpg",
+  "gender": "남성",
+  "summary": "블랙 레더 라이더, 블랙 와이드 팬츠",
+  "ref": "IG-0021",
+  "items": [
+   "가죽 재킷",
+   "와이드 팬츠"
+  ],
+  "styles": [
+   "미니멀",
+   "스트리트"
+  ],
+  "colors": [
+   "블랙"
+  ],
+  "materials": [
+   "가죽"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0046": {
+  "code": "AI-0046",
+  "via": "스트릿",
+  "source": "Tokyo FW26 스트릿",
+  "link": "https://hypebeast.com/2026/3/tokyo-fashion-week-fw26-street-style",
+  "photo": "photos/ai/AI-0046.jpg",
+  "image_key": "tok_21.jpg",
+  "gender": "남성",
+  "summary": "브라운 롱코트, 그레이 티, 연청 배기 데님, 볼캡",
+  "ref": "IG-0045",
+  "items": [
+   "코트",
+   "티셔츠",
+   "데님 팬츠",
+   "모자/볼캡"
+  ],
+  "styles": [
+   "오버사이즈",
+   "레이어드",
+   "스트리트"
+  ],
+  "colors": [
+   "브라운/카멜",
+   "그레이/차콜",
+   "블루/인디고"
+  ],
+  "materials": [
+   "데님"
+  ],
+  "details": [
+   "워싱/디스트레스드"
+  ],
+  "added": "2026-09-27"
+ },
+ "AI-0047": {
+  "code": "AI-0047",
+  "via": "스트릿",
+  "source": "Tokyo FW26 스트릿",
+  "link": "https://hypebeast.com/2026/3/tokyo-fashion-week-fw26-street-style",
+  "photo": "photos/ai/AI-0047.jpg",
+  "image_key": "tok_25.jpg",
+  "gender": "남성",
+  "summary": "블루 워크 재킷, 스트라이프 셔츠, 브라운 팬츠",
+  "ref": "IG-0058",
+  "items": [
+   "필드/워크 재킷",
+   "셔츠",
+   "슬랙스/트라우저",
+   "선글라스/안경"
+  ],
+  "styles": [
+   "워크웨어",
+   "빈티지/레트로"
+  ],
+  "colors": [
+   "블루/인디고",
+   "브라운/카멜"
+  ],
+  "materials": [],
+  "details": [
+   "스트라이프"
+  ],
+  "added": "2026-09-27"
+ },
+ "AI-0048": {
+  "code": "AI-0048",
+  "via": "스트릿",
+  "source": "Tokyo FW26 스트릿",
+  "link": "https://hypebeast.com/2026/3/tokyo-fashion-week-fw26-street-style",
+  "photo": "photos/ai/AI-0048.jpg",
+  "image_key": "tok_29.jpg",
+  "gender": "남성",
+  "summary": "머스타드 레더 재킷, 브라운 와이드 팬츠",
+  "ref": "IG-0053",
+  "items": [
+   "가죽 재킷",
+   "셔츠",
+   "와이드 팬츠"
+  ],
+  "styles": [
+   "빈티지/레트로",
+   "스트리트"
+  ],
+  "colors": [
+   "옐로우/머스타드",
+   "브라운/카멜"
+  ],
+  "materials": [
+   "가죽"
+  ],
+  "details": [],
+  "added": "2026-09-27"
+ },
+ "AI-0049": {
+  "code": "AI-0049",
+  "via": "스트릿",
+  "source": "Tokyo SS27 스트릿",
+  "link": "https://hypebeast.com/2026/9/tokyo-fashion-week-ss27-street-style",
+  "photo": "photos/ai/AI-0049.jpg",
+  "image_key": "tk2_15.jpg",
+  "gender": "남성",
+  "summary": "그래픽 티, 크림 와이드 팬츠, 퍼플 백 포인트",
+  "ref": "IG-0054",
+  "items": [
+   "티셔츠",
+   "와이드 팬츠",
+   "숄더백"
+  ],
+  "styles": [
+   "스트리트",
+   "오버사이즈"
+  ],
+  "colors": [
+   "블랙",
+   "아이보리/크림",
+   "퍼플/라벤더"
+  ],
+  "materials": [],
+  "details": [
+   "로고/그래픽"
+  ],
+  "added": "2026-09-27"
+ },
+ "AI-0050": {
+  "code": "AI-0050",
+  "via": "스트릿",
+  "source": "Tokyo SS27 스트릿",
+  "link": "https://hypebeast.com/2026/9/tokyo-fashion-week-ss27-street-style",
+  "photo": "photos/ai/AI-0050.jpg",
+  "image_key": "tk2_19.jpg",
+  "gender": "남성",
+  "summary": "블랙 티, 블랙 와이드 팬츠. 가장 단순한 한 벌",
+  "ref": "IG-0032",
+  "items": [
+   "티셔츠",
+   "와이드 팬츠"
+  ],
+  "styles": [
+   "미니멀"
+  ],
+  "colors": [
+   "블랙"
+  ],
+  "materials": [],
+  "details": [],
+  "added": "2026-09-27"
+ }
+}

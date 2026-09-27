@@ -1,0 +1,300 @@
+{
+ "_설명": "인스타 공식 API로 최근 게시물을 가져올 계정 목록. 공개 비즈니스·크리에이터 계정만 가져올 수 있음(개인 계정은 API가 막음 → status에 기록됨). 사장님 허락 없이 계정을 빼지 않음. 더할 때는 username만 적으면 됨.",
+ "accounts": [
+  {
+   "username": "edit.fabregat",
+   "from": "보드 출처",
+   "note": "보드 7장"
+  },
+  {
+   "username": "daaan.888",
+   "from": "보드 출처",
+   "note": "보드 5장"
+  },
+  {
+   "username": "epicenter.tourist",
+   "from": "보드 출처",
+   "note": "보드 4장"
+  },
+  {
+   "username": "nthirtyseven",
+   "from": "보드 출처",
+   "note": "보드 3장"
+  },
+  {
+   "username": "guvo.official",
+   "from": "보드 출처",
+   "note": "보드 3장"
+  },
+  {
+   "username": "noun.seoul",
+   "from": "보드 출처",
+   "note": "보드 3장"
+  },
+  {
+   "username": "jentestore",
+   "from": "보드 출처",
+   "note": "보드 2장"
+  },
+  {
+   "username": "glowupmag",
+   "from": "보드 출처",
+   "note": "보드 2장"
+  },
+  {
+   "username": "probit.mag",
+   "from": "보드 출처",
+   "note": "보드 2장"
+  },
+  {
+   "username": "nuakle",
+   "from": "보드 출처",
+   "note": "보드 2장"
+  },
+  {
+   "username": "nonlabel.mag",
+   "from": "보드 출처",
+   "note": "보드 2장"
+  },
+  {
+   "username": "neoiwon",
+   "from": "보드 출처",
+   "note": "보드 2장"
+  },
+  {
+   "username": "dailyfashion_news",
+   "from": "보드 출처",
+   "note": "보드 2장"
+  },
+  {
+   "username": "un_alloyed",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "pauseonline",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "eyesmag",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "fvckingandrew",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "moodinside_official",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "winder.official",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "oldlaundry_mag",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "wiw_curation",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "juhoon_style",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "gideontarango",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "ssixsix_",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "kida_unisex",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "torra.studio",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "leemiinjun",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "attiresaint",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "noise_wrk",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "blake.nun",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "egoproject.seoul",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "nonblank_",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "carharttwip",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "birthdaysuit.only",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "sa.i.sam",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "noomseek",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "venus_as_a_jeans",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "globestudios",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "sethlevifloris",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "aboutnini",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "egon_lab",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "lookbox_",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "user_jjun",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "kimxaehwan",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "nhogirl",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "nobiases",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "hweekmag",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "ureammm",
+   "from": "보드 출처",
+   "note": "보드 1장"
+  },
+  {
+   "username": "graphpaper_official",
+   "from": "무드 레퍼런스 50",
+   "note": "Graphpaper — 아이디 추정, --check로 확인"
+  },
+  {
+   "username": "norseprojects",
+   "from": "무드 레퍼런스 50",
+   "note": "Norse Projects — 아이디 추정, --check로 확인"
+  },
+  {
+   "username": "uniqlo",
+   "from": "무드 레퍼런스 50",
+   "note": "Uniqlo (U 라인 포함) — 아이디 추정, --check로 확인"
+  },
+  {
+   "username": "ourlegacy",
+   "from": "무드 레퍼런스 50",
+   "note": "Our Legacy — 아이디 추정, --check로 확인"
+  },
+  {
+   "username": "lemaire_official",
+   "from": "무드 레퍼런스 50",
+   "note": "Lemaire — 아이디 추정, --check로 확인"
+  },
+  {
+   "username": "studionicholson",
+   "from": "무드 레퍼런스 50",
+   "note": "Studio Nicholson — 아이디 추정, --check로 확인"
+  },
+  {
+   "username": "kaptainsunshine_official",
+   "from": "무드 레퍼런스 50",
+   "note": "Kaptain Sunshine — 아이디 추정, --check로 확인"
+  },
+  {
+   "username": "nonnative_official",
+   "from": "무드 레퍼런스 50",
+   "note": "nonnative — 아이디 추정, --check로 확인"
+  },
+  {
+   "username": "sunflower.cph",
+   "from": "무드 레퍼런스 50",
+   "note": "Sunflower — 아이디 추정, --check로 확인"
+  },
+  {
+   "username": "auralee_tokyo",
+   "from": "무드 레퍼런스 50",
+   "note": "AURALEE — 아이디 추정, --check로 확인"
+  },
+  {
+   "username": "hypebeast",
+   "from": "무드 레퍼런스 50",
+   "note": "Hypebeast (스트릿 스냅) — 아이디 추정, --check로 확인"
+  }
+ ]
+}

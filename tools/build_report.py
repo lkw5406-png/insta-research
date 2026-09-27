@@ -1,7 +1,13 @@
 """리포트 생성 Tool — 'LKW 리서치 보드'. 판정표(data/photo_labels.json)의 패션 사진을 목록별 사진 갤러리로 만든다.
 
-- 목록: [전체 | 인스타그램 | 핀터레스트 | 런웨이] (common.BOARDS + 3개를 합친 '전체'(기본), 주소 #all / #instagram / #pinterest / #runway).
+- 목록: [전체 | 인스타그램 | 핀터레스트 | 런웨이 | AI추천 | 휴지통] (common.BOARDS + '전체'(기본) + AI추천 + 휴지통,
+  주소 #all / #instagram / #pinterest / #runway / #ai / #trash).
   (2026-09-27 사장님 요청으로 '전체' 추가. 전체 목록의 사진 카드에는 어느 목록 사진인지 표시)
+- AI추천(2026-09-27): data/ai_picks.json — Claude가 보드와 무드가 비슷한 사진을 찾아 고른 것(tools/ai_picks.py).
+  사장님이 모은 사진이 아니라 [전체]에는 안 섞음. 카드에 원래 페이지 링크 + '보드에서 닮은 사진' 번호(누르면 그 사진 검색).
+- 휴지통(2026-09-27): 사진마다 [휴지통] 버튼 → 휴지통 탭, 거기서 [복구]. 사이트는 보기 전용이라 누른 것은 그 기기(브라우저)에만
+  저장됨 → 위쪽 [변경 목록 복사] 글을 사장님이 Claude에게 주면 tools/ai_picks.py --apply로 판정표에 반영("trashed": 날짜).
+  반영된 휴지통 사진은 모든 기기의 휴지통 탭에 보이고, 파일은 지우지 않음(복구 가능).
 - 사진마다 출처(인스타·핀터레스트 @아이디는 프로필 링크, 런웨이는 브랜드·시즌), 저장 날짜, 한 줄 설명, 키워드.
 - 걸러 보기: [전체|여성|남성] · 아이템·스타일·컬러·소재 · 출처 계정 · 기간(전체/이번 주/이번 달).
 - 기본(로컬): report/index.html 이 ../photos/ 원본 사진을 읽음 → 이 PC에서만 열림.
@@ -21,7 +27,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import BOARDS, LABELS_PATH, REPORT_DIR, ROOT, load_json, today_kst
+from common import BOARDS, DATA_DIR, LABELS_PATH, REPORT_DIR, ROOT, load_json, today_kst
 
 DOCS_DIR = ROOT / "docs"
 
@@ -31,7 +37,10 @@ SWATCH = {"블랙": "#111111", "화이트": "#f7f7f5", "아이보리/크림": "#
           "옐로우/머스타드": "#d8a824", "오렌지": "#e0702a",
           "메탈릭(실버·골드)": "linear-gradient(135deg,#c9c9c9,#f1e3a8 50%,#b9b9b9)",
           "멀티컬러/비비드": "conic-gradient(#e0402a,#e0c02a,#3fb04f,#2a78d6,#9a4ad6,#e0402a)"}
-ALL = {"all": {"name": "전체", "folder": "", "source_label": "출처"}}  # 3개 목록을 합친 보기
+ALL = {"all": {"name": "전체", "folder": "", "source_label": "출처"}}  # 3개 목록을 합친 보기 (AI추천 제외)
+EXTRA = {"ai": {"name": "AI추천", "folder": "", "source_label": "출처"},      # Claude가 찾은 비슷한 무드 사진
+         "trash": {"name": "휴지통", "folder": "", "source_label": "출처"}}   # 휴지통에 넣은 사진 (모든 목록)
+AI_PATH = DATA_DIR / "ai_picks.json"
 FIELDS = ["items", "styles", "colors", "materials", "details"]
 PUBLISH_MAX = 480  # --publish 때 목록에 쓰는 사진 긴 변(px)
 ZOOM_MAX = 1000    # 사진을 눌렀을 때 크게 보는 사진 긴 변(px)
@@ -46,10 +55,17 @@ def rows(publish: bool) -> list[dict]:
             src = small_copy(ROOT / p, keep) if publish else "../" + p
             big = small_copy(ROOT / p, keep, "big", ZOOM_MAX) if publish else "../" + p
             code = l.get("code", "") + ("" if k == 0 else f"_{k + 1}")
-            out.append({"id": f"{fid}_{k}", "code": code, "b": l.get("board", "instagram"), "src": src, "big": big,
+            out.append({"id": f"{fid}_{k}", "code": code, "tc": l.get("code", ""), "t": l.get("trashed", ""),
+                        "b": l.get("board", "instagram"), "src": src, "big": big,
                         "source": l.get("source", ""), "origin": l.get("origin", ""), "note": l.get("source_note", ""),
                         "g": l["gender"], "sum": l.get("summary", ""), "added": l["added"],
                         **{f: l.get(f, []) for f in FIELDS}})
+    for code, a in load_json(AI_PATH, {}).items():
+        src = small_copy(ROOT / a["photo"], keep) if publish else "../" + a["photo"]
+        big = small_copy(ROOT / a["photo"], keep, "big", ZOOM_MAX) if publish else "../" + a["photo"]
+        out.append({"id": code, "code": code, "tc": code, "t": a.get("trashed", ""), "b": "ai", "src": src, "big": big,
+                    "source": a["source"], "link": a["link"], "via": a["via"], "ref": a.get("ref", ""), "origin": "", "note": "",
+                    "g": a["gender"], "sum": a["summary"], "added": a["added"], **{f: a.get(f, []) for f in FIELDS}})
     if publish:  # 판정표에서 빠진 사진의 공개본은 지움
         for old in (DOCS_DIR / "img").rglob("*.jpg"):
             if old.relative_to(DOCS_DIR / "img").as_posix() not in keep:
@@ -130,7 +146,20 @@ button:focus-visible, a:focus-visible { outline:2px solid var(--accent); outline
 .code { position:absolute; top:8px; left:8px; font:700 12px/1 ui-monospace,Consolas,monospace; color:#fff;
   background:rgba(0,0,0,.62); padding:5px 7px; border-radius:6px; letter-spacing:.02em; pointer-events:none; }
 .bd { display:inline-block; font-size:11px; font-weight:700; padding:1px 7px; border-radius:6px; margin-right:6px; vertical-align:1px; color:#fff; }
-.bd-instagram { background:#c13584; } .bd-pinterest { background:#e60023; } .bd-runway { background:#3a3a3a; }
+.bd-instagram { background:#c13584; } .bd-pinterest { background:#e60023; } .bd-runway { background:#3a3a3a; } .bd-ai { background:#5b4bc4; }
+.via { font-size:11px; font-weight:700; padding:1px 7px; border-radius:6px; margin-right:6px; vertical-align:1px; background:var(--chip); color:var(--ink); }
+.acts { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; padding-top:8px; border-top:1px solid var(--grid); }
+.acts button { font:inherit; font-size:12px; padding:4px 10px; border-radius:999px; border:1px solid var(--border); background:transparent; color:var(--ink-2); cursor:pointer; }
+.acts button:hover { color:var(--ink); border-color:var(--ink-2); }
+.acts .ref { color:#5b4bc4; border-color:rgba(91,75,196,.35); }
+.item.gone { opacity:.55; }
+.tmeta { font-size:12px; color:var(--muted); }
+#pending { display:flex; flex-wrap:wrap; gap:8px 12px; align-items:center; margin:0 0 14px; padding:12px 14px; border-radius:12px;
+  background:var(--chip); font-size:14px; }
+#pending b { font-weight:700; } #pending span { color:var(--ink-2); }
+#pending button { font:inherit; font-size:13px; font-weight:700; padding:6px 12px; border-radius:999px; border:0; cursor:pointer; background:var(--ink); color:var(--page); }
+#pending button.ghost { background:transparent; color:var(--ink-2); font-weight:400; text-decoration:underline; padding:6px 4px; }
+#pending textarea { flex:1 1 100%; font:13px/1.5 ui-monospace,Consolas,monospace; padding:8px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--ink); }
 .empty code { background:var(--chip); color:var(--ink); padding:2px 8px; border-radius:6px; }
 .boards { display:flex; gap:8px; margin-top:18px; overflow-x:auto; scrollbar-width:none; }
 .boards button { flex:none; font:inherit; font-size:16px; font-weight:700; padding:10px 18px; border-radius:12px; cursor:pointer;
@@ -163,7 +192,25 @@ function inPeriod(r) {
   const diff = (day(D.today) - day(r.added)) / 864e5;
   return S.p === 'w' ? diff < 7 : diff < 31;
 }
-const inBoard = (r, b) => b === 'all' || r.b === b;
+// 휴지통: 서버(판정표 trashed) + 이 기기에서 누른 것(P, localStorage). P = {번호: 'del' | 'res'}
+const PK = 'lkw-board-pending';
+let P = {}; try { P = JSON.parse(localStorage.getItem(PK) || '{}') || {}; } catch (e) { P = {}; }
+const byTc = {}; D.rows.forEach(r => { if (r.tc) (byTc[r.tc] = byTc[r.tc] || []).push(r); });
+Object.keys(P).forEach(c => { const r = (byTc[c] || [])[0]; if (!r || (P[c] === 'del') === !!r.t) delete P[c]; });  // 이미 반영된 것은 정리
+const savePending = () => { try { localStorage.setItem(PK, JSON.stringify(P)); } catch (e) {} };
+const trashed = r => r.tc && P[r.tc] ? P[r.tc] === 'del' : !!r.t;
+function setTrash(c, want) { const r = (byTc[c] || [])[0]; if (!r) return; if (!!r.t === want) delete P[c]; else P[c] = want ? 'del' : 'res'; savePending(); }
+const inBoard = (r, b) => b === 'trash' ? trashed(r) : !trashed(r) && (b === 'all' ? r.b !== 'ai' : r.b === b);
+const pendingText = () => { const d = Object.keys(P).filter(c => P[c] === 'del'), s = Object.keys(P).filter(c => P[c] === 'res');
+  return [d.length ? '삭제: ' + d.join(', ') : '', s.length ? '복구: ' + s.join(', ') : ''].filter(Boolean).join(' / '); };
+function pendingBar() {
+  const n = Object.keys(P).length, el = $('#pending');
+  el.hidden = !n;
+  if (!n) return;
+  el.innerHTML = `<b>이 기기에서 바꾼 것 ${n}건</b><span>다른 기기에도 반영하려면 목록을 복사해 Claude에게 붙여 넣어 주세요.</span>
+    <button id="copyp">변경 목록 복사</button><button class="ghost" id="undop">모두 되돌리기</button>
+    <textarea id="ptext" rows="2" readonly aria-label="변경 목록">${esc(pendingText())}</textarea>`;
+}
 const hit = r => { const q = (S.q || '').trim().toLowerCase().replace(/^@/, ''); if (!q) return true;
   return [r.code, r.source, r.origin, r.sum].some(v => (v || '').toLowerCase().replace(/^@/, '').includes(q)); };
 const base = () => D.rows.filter(r => inBoard(r, S.b) && (S.g === '전체' || r.g === S.g || r.g === '공용') && inPeriod(r) && hit(r));
@@ -182,6 +229,7 @@ function count(rows, field) {
 }
 function render() {
   tabs();
+  pendingBar();
   const B = D.boards[S.b];
   LBL.source = B.source_label;
   const rows = base();
@@ -190,7 +238,9 @@ function render() {
   $('#grid').classList.toggle('grid', !none);
   ['#stats', '#facets', '#active'].forEach(k => $(k).hidden = none);
   if (none) {
-    $('#grid').innerHTML = `<div class="empty"><b>${B.name} 목록이 아직 비어 있어요.</b><br>
+    $('#grid').innerHTML = S.b === 'trash' ? `<div class="empty"><b>휴지통이 비어 있어요.</b><br>사진의 [휴지통] 버튼을 누르면 여기로 옮겨지고, 여기서 [복구]할 수 있어요.</div>`
+      : S.b === 'ai' ? `<div class="empty"><b>AI추천 사진이 아직 없어요.</b><br>"보드랑 비슷한 무드 사진 찾아줘"라고 말씀해 주세요.</div>`
+      : `<div class="empty"><b>${B.name} 목록이 아직 비어 있어요.</b><br>
       캡처를 <code>바탕화면/인스타 리서치/inbox/${B.folder || '인스타그램·핀터레스트·런웨이'}</code> 폴더에 넣고 "리서치 보드 정리해줘"라고 말씀해 주세요.</div>`;
     return;
   }
@@ -209,15 +259,20 @@ function render() {
   }).join('');
   $('#active').innerHTML = S.f ? `<b>${LBL[S.f.field]}: ${esc(S.f.value)}</b> · ${shown.length}장 <button id="clear">전체 보기</button>` : `${shown.length}장, 최근 저장 순`;
   $('#grid').innerHTML = shown.length ? shown.map(r => {
-    const src = r.source === '확인 불가' || !r.source
+    const src = r.link ? `<a class="src" href="${esc(r.link)}" target="_blank" rel="noopener">${esc(r.source)}</a>`
+      : r.source === '확인 불가' || !r.source
       ? `<span class="unk" title="${esc(r.note)}">출처 확인 불가</span>`
       : r.source.startsWith('@') && LINK[r.b]
         ? `<a class="src" href="${LINK[r.b]}${encodeURIComponent(r.source.slice(1))}/" target="_blank" rel="noopener">${esc(r.source)}</a>`
         : `<span class="src">${esc(r.source)}</span>`;
     const origin = r.origin ? ` <span class="meta">· 원출처 ${esc(r.origin)}</span>` : '';
     const tags = [...r.items, ...r.styles, ...r.colors, ...r.materials, ...r.details].map(t => `<span>${esc(t)}</span>`).join('');
-    return `<figure class="item">${r.code ? `<span class="code">${esc(r.code)}</span>` : ''}<img loading="lazy" src="${r.src}" alt="${esc(r.sum)}" data-big="${r.big}" data-cap="${esc((r.code ? r.code + ' · ' : '') + (r.source || '') + ' · ' + r.sum)}">
-      <div class="body">${S.b === 'all' ? `<span class="bd bd-${r.b}">${esc(D.boards[r.b].name)}</span>` : ''}${src}${origin} <span class="meta">· ${r.g} · ${r.added}</span><p class="sum">${esc(r.sum)}</p><div class="tags">${tags}</div></div></figure>`;
+    const gone = trashed(r);
+    const acts = [r.ref ? `<button class="ref" data-ref="${esc(r.ref)}">보드에서 닮은 사진 ${esc(r.ref)} →</button>` : '',
+      r.tc ? (gone ? `<button data-restore="${esc(r.tc)}">복구</button>` : `<button data-trash="${esc(r.tc)}" aria-label="${esc(r.tc)} 휴지통으로">휴지통</button>`) : ''].join('');
+    const tinfo = gone ? `<p class="tmeta">휴지통에 넣은 날: ${r.t && P[r.tc] !== 'del' ? r.t : '방금 (이 기기)'}</p>` : '';
+    return `<figure class="item${gone ? ' gone' : ''}">${r.code ? `<span class="code">${esc(r.code)}</span>` : ''}<img loading="lazy" src="${r.src}" alt="${esc(r.sum)}" data-big="${r.big}" data-cap="${esc((r.code ? r.code + ' · ' : '') + (r.source || '') + ' · ' + r.sum)}">
+      <div class="body">${S.b === 'all' || S.b === 'trash' ? `<span class="bd bd-${r.b}">${esc(D.boards[r.b].name)}</span>` : ''}${r.via ? `<span class="via">${esc(r.via)}</span>` : ''}${src}${origin} <span class="meta">· ${r.g} · ${r.added}</span><p class="sum">${esc(r.sum)}</p><div class="tags">${tags}</div>${tinfo}<div class="acts">${acts}</div></div></figure>`;
   }).join('') : '<p class="empty">조건에 맞는 사진이 없어요.</p>';
 }
 document.getElementById('q').addEventListener('input', e => { S.q = e.target.value; S.f = null; render(); });
@@ -232,6 +287,12 @@ document.addEventListener('click', e => {
   else if (b.dataset.p) { S.p = b.dataset.p; S.f = null; document.querySelectorAll('[data-p]').forEach(x => x.setAttribute('aria-pressed', x === b)); }
   else if (b.dataset.f) { const same = S.f && S.f.field === b.dataset.f && S.f.value === b.dataset.v; S.f = same ? null : {field: b.dataset.f, value: b.dataset.v}; }
   else if (b.id === 'clear') S.f = null;
+  else if (b.dataset.trash) setTrash(b.dataset.trash, true);
+  else if (b.dataset.restore) setTrash(b.dataset.restore, false);
+  else if (b.dataset.ref) { S.b = 'all'; S.f = null; S.q = b.dataset.ref; $('#q').value = b.dataset.ref; history.replaceState(null, '', '#all'); window.scrollTo({top: 0}); }
+  else if (b.id === 'undop') { P = {}; savePending(); }
+  else if (b.id === 'copyp') { const t = pendingText(); navigator.clipboard.writeText(t).then(() => { b.textContent = '복사됨'; })
+      .catch(() => { const ta = $('#ptext'); ta.focus(); ta.select(); b.textContent = '아래 글을 복사해 주세요'; }); return; }
   else return;
   render();
 });
@@ -253,14 +314,15 @@ def page(data: dict) -> str:
 <div class="wrap">
 <header>
   <h1>LKW 리서치 보드</h1>
-  <p>인스타그램·핀터레스트·런웨이에서 모은 패션 사진 · 전체 {len(data['rows'])}장 · {data['today']} 갱신</p>
-  <nav class="boards" role="tablist" aria-label="목록">{''.join(f'<button role="tab" data-b="{k}" aria-selected="false">{b["name"]} <i>0</i></button>' for k, b in {**ALL, **BOARDS}.items())}</nav>
+  <p>인스타그램·핀터레스트·런웨이에서 모은 패션 사진 {sum(r['b'] != 'ai' for r in data['rows'])}장 + AI추천 {sum(r['b'] == 'ai' for r in data['rows'])}장 · {data['today']} 갱신</p>
+  <nav class="boards" role="tablist" aria-label="목록">{''.join(f'<button role="tab" data-b="{k}" aria-selected="false">{b["name"]} <i>0</i></button>' for k, b in data['boards'].items())}</nav>
 </header>
 <div class="topbar">
   <div class="pill" role="group" aria-label="성별">{''.join(f'<button data-g="{g}" aria-pressed="{str(g == "전체").lower()}">{g}</button>' for g in ("전체", "여성", "남성"))}</div>
   <div class="pill" role="group" aria-label="기간">{''.join(f'<button data-p="{k}" aria-pressed="{str(k == "all").lower()}">{v}</button>' for k, v in (("all", "전체 기간"), ("w", "최근 7일"), ("m", "최근 30일")))}</div>
-  <input id="q" class="search" type="search" placeholder="번호·계정 검색 (예: IG-0023, fabregat)" aria-label="번호·계정 검색">
+  <input id="q" class="search" type="search" placeholder="번호·계정 검색 (예: IG-0023, AI-0005, fabregat)" aria-label="번호·계정 검색">
 </div>
+<div id="pending" role="status" hidden></div>
 <div class="stats" id="stats"></div>
 <div class="facets" id="facets"></div>
 <p class="active" id="active"></p>
@@ -277,7 +339,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--publish", action="store_true")
     a = ap.parse_args()
-    data = {"today": today_kst(), "rows": rows(a.publish), "swatch": SWATCH, "boards": {**ALL, **BOARDS}}
+    data = {"today": today_kst(), "rows": rows(a.publish), "swatch": SWATCH, "boards": {**ALL, **BOARDS, **EXTRA}}
     folder = DOCS_DIR if a.publish else REPORT_DIR
     folder.mkdir(exist_ok=True)
     out = folder / "index.html"
@@ -285,7 +347,7 @@ def main() -> int:
     if a.publish:
         (DOCS_DIR / "robots.txt").write_text("User-agent: *\nDisallow: /\n", encoding="utf-8")
         (DOCS_DIR / ".nojekyll").write_text("", encoding="utf-8")
-    print(f"리포트 생성: 패션 사진 {len(data['rows'])}장 → {out.relative_to(ROOT)} ({out.stat().st_size // 1024}KB)")
+    print(f"리포트 생성: 사진 {len(data['rows'])}장(AI추천 포함) → {out.relative_to(ROOT)} ({out.stat().st_size // 1024}KB)")
     return 0
 
 
