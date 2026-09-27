@@ -23,13 +23,23 @@
    레더/필드 재킷 + 와이드 데님·슬랙스 레이어드, 저채도 톤에 레드·퍼플·머스타드 한 점. 화려한 쇼피스 제외).
 3. AI추천 탭에서 사장님이 **휴지통에 넣은 사진**(`python tools/ai_picks.py --list`)은 "싫은 방향"이므로 비슷한 건 고르지 않는다.
 
-## A. 웹에서 찾기 (룩북·런웨이·스트릿 기사)
-1. WebSearch로 후보 페이지 찾기: Hypebeast(룩북·패션위크 스트릿 스냅 기사, 사진이 많고 받기 쉬움), 브랜드 공식 룩북 페이지,
-   Vogue Scandinavia 등. 잘 맞았던 곳: Graphpaper, Norse Projects, Uniqlo U, Carhartt WIP, Studio Nicholson, Our Legacy, Sunflower.
-2. 페이지의 사진 주소를 뽑아 받고(Hypebeast는 `image-cdn.hypb.st` 주소에 `?w=720`), 번호 딱지 붙은 모아보기로 한 장씩 본다.
-   임시 파일은 `.tmp/`에. 한 페이지에 같은 컷이 여러 번(쇼 연속 사진) 나오면 하나만.
-3. 고른 사진으로 `.tmp/ai_add.json` 작성 (형식은 `tools/ai_picks.py` 맨 위) → `uv run -q --with pillow python tools/ai_picks.py --add .tmp/ai_add.json`.
-   문제가 있으면 아무것도 안 합치고 목록을 보여 줌 → 고쳐서 다시. 같은 사진은 두 번 안 들어감.
+## A. 웹에서 찾기 (잡지·룩북·런웨이 + 무신사 스냅 + Are.na) — `tools/web_cands.py`
+1. 후보 출처 정하기 → `.tmp/jobs.json` (형식은 `tools/web_cands.py` 맨 위). 종류 3가지:
+   - **잡지·룩북 (`page`)**: Hypebeast 기사(최근 기사 목록 `hypebeast.com/fashion`, `/fashion/page/2`…에서 lookbook·collection·street-style 기사),
+     브랜드 공식 룩북, Vogue Scandinavia 등. 잘 맞았던 곳: Graphpaper, Norse Projects, Uniqlo U, Carhartt WIP, Studio Nicholson,
+     Our Legacy, Sunflower, Prada 런웨이, JiyongKim. 화려한 스트릿 브랜드 룩북(Awake NY 등)은 거의 안 맞음.
+   - **무신사 스냅 (`musinsa`)**: 한국 일반인 착장. 목록 주소 `https://www.musinsa.com/snap/main/recommend?sort=NEWEST`(최신)·`?sort=POPULAR`(인기).
+     robots.txt가 'Claude-User'를 허용 → 사장님이 요청할 때만. 한 번에 약 36개이고 주소 뒤 조건(gender 등)을 바꿔도 같은 목록이 옴 →
+     새 스냅은 며칠 지나 다시 받을 때 생김(이미 받은 건 도구가 자동으로 건너뜀).
+     ⚠️ **"AI로 생성" 표시가 있는 사진은 절대 고르지 않음**(흰 배경 + MUSINSA 글자 사진에 많음. 왼쪽 아래 작은 표시 → 애매하면 크게 확인).
+   - **Are.na (`arena`)**: 핀터레스트 비슷한 무드보드, 공식 API(키 불필요). `--arena-search 검색어`로 채널 찾기.
+     잘 맞은 채널: `fit-pics-n_s2rve1iky`(Fit pics, 가장 좋음), `menswear-s4sdko_jurw`, `throwing-fits`, `menswear-ihx8m3zkipe`.
+     흑백 화보·옛 잡지 스캔·아트 채널(예: `menswear-xlanwsjtlrs`, `menswear-media-system`, `workwear-lookbook`, `artist-fits`)은 안 맞음.
+2. `uv run -q --with pillow python tools/web_cands.py --jobs .tmp/jobs.json` → `--sheet 앞글자들` → 판독 이미지(`.tmp/cands/sheets/`)를
+   **하나씩 Read로 보고** 고른다. 고른 것만 크게 모아 한 번 더 보고 설명·키워드를 쓴다. 한 쇼의 연속 사진은 하나만.
+3. `.tmp/ai_add.json` 작성 (형식은 `tools/ai_picks.py` 맨 위, via: 룩북/런웨이/스트릿) →
+   `uv run -q --with pillow python tools/ai_picks.py --add .tmp/ai_add.json`. 문제가 있으면 아무것도 안 합치고 목록을 보여 줌.
+4. 출처 섞기: 한 브랜드·한 채널이 전체의 10%를 넘지 않게. 사장님 보드처럼 남성 중심이되 여성 착장도 조금.
 
 ## B. 인스타그램 공식 API로 찾기
 ### 처음 한 번 연결 (사장님 + Claude)
@@ -76,5 +86,8 @@
 - Graph API 버전(v25.0)이 종료되면 `tools/ig_api.py`의 `GRAPH` 주소 버전을 올림.
 
 ## 변경 기록
+- 2026-09-27: 2차 99장(AI-0051~0149): 무신사 스냅 12, Are.na 40, 잡지·런웨이 13, 1차 후보 재선별 34(화려한 무늬 바지 2장은 제외).
+  후보 수집 도구 tools/web_cands.py(잡지·무신사·Are.na) 추가. 무신사 'AI로 생성' 사진 제외 규칙. 인스타 연결은 페이스북 페이지에 인스타 연결이
+  Meta 보안 조치로 막혀 대기 중(오래가는 사용자 토큰은 저장됨 → 연결되면 --setup만 다시).
 - 2026-09-27: 매뉴얼 생성. 웹 검색으로 AI추천 50장(AI-0001~0050). 인스타 공식 API 도구(tools/ig_api.py)·감시 계정 59곳
   (보드 출처 48 + 브랜드 11, 브랜드 아이디는 추정 → 첫 --fetch에서 확인). 휴지통 기능.

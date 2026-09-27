@@ -84,17 +84,24 @@ def need(*keys: str) -> dict[str, str]:
 # ---------- 연결 ----------
 
 def setup() -> None:
-    env = need("META_APP_ID", "META_APP_SECRET", "IG_SHORT_TOKEN")
-    try:
-        long = graph("oauth/access_token", {
-            "grant_type": "fb_exchange_token", "client_id": env["META_APP_ID"],
-            "client_secret": env["META_APP_SECRET"], "fb_exchange_token": env["IG_SHORT_TOKEN"]})
-    except GraphError as e:
-        sys.exit(f"토큰 바꾸기 실패 {e}\n→ 짧은 토큰은 약 1시간이면 만료됨. 탐색기에서 새로 받아 IG_SHORT_TOKEN에 다시 넣기. "
-                 f"앱 ID·시크릿이 같은 앱 것인지도 확인")
-    user_token = long["access_token"]
-    expires = long.get("expires_in")
-    expires_on = datetime.fromtimestamp(time.time() + expires, KST).strftime("%Y-%m-%d") if expires else ""
+    load_env()
+    if not os.environ.get("IG_SHORT_TOKEN") and os.environ.get("IG_USER_TOKEN"):
+        # 이미 바꿔 둔 오래가는 토큰으로 페이지 찾기만 다시 (페이지 연결을 고친 뒤 재시도할 때)
+        user_token, expires_on = os.environ["IG_USER_TOKEN"], os.environ.get("IG_USER_TOKEN_EXPIRES", "")
+    else:
+        env = need("META_APP_ID", "META_APP_SECRET", "IG_SHORT_TOKEN")
+        try:
+            long = graph("oauth/access_token", {
+                "grant_type": "fb_exchange_token", "client_id": env["META_APP_ID"],
+                "client_secret": env["META_APP_SECRET"], "fb_exchange_token": env["IG_SHORT_TOKEN"]})
+        except GraphError as e:
+            sys.exit(f"토큰 바꾸기 실패 {e}\n→ 짧은 토큰은 약 1시간이면 만료됨. 탐색기에서 새로 받아 IG_SHORT_TOKEN에 다시 넣기. "
+                     f"앱 ID·시크릿이 같은 앱 것인지도 확인")
+        user_token = long["access_token"]
+        expires = long.get("expires_in")
+        expires_on = datetime.fromtimestamp(time.time() + expires, KST).strftime("%Y-%m-%d") if expires else ""
+        # 페이지 찾기가 실패해도 다시 짧은 토큰을 받을 필요 없게 먼저 저장 (2026-09-27 첫 연결 때 페이지 미연결로 실패)
+        save_env({"IG_USER_TOKEN": user_token, "IG_USER_TOKEN_EXPIRES": expires_on, "IG_SHORT_TOKEN": None})
 
     pages = graph("me/accounts", {"fields": "name,access_token,instagram_business_account{id,username}",
                                   "access_token": user_token}).get("data", [])
