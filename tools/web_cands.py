@@ -3,6 +3,8 @@
 Claude가 판독 이미지를 직접 보고 고른 뒤 tools/ai_picks.py --add 로 AI추천 탭에 넣는다 (매뉴얼: workflows/ig_api_reference.md).
 
 출처 종류 (jobs.json의 "kind"):
+⛔ 2026-09-27 사장님 지시: musinsa·kream은 조사하지 않음(사진 품질 불만) → BLOCKED로 막음. 지금 쓰는 건 "page"·"arena".
+   코드는 사장님이 다시 허락할 때를 위해 남겨 둠(BLOCKED에서 빼면 다시 동작).
 - "page"    기사·룩북 페이지에서 사진 주소를 뽑음. "match"(정규식)로 원하는 사진만, "skip"으로 제외.
             Hypebeast는 image-cdn.hypb.st 주소가 기사 사진 (…-tw.jpg는 대표 이미지라 skip).
 - "musinsa" 무신사 스냅(일반인 착장). "url"에 스냅 목록 주소(예: https://www.musinsa.com/snap/main/recommend?sort=NEWEST).
@@ -150,6 +152,8 @@ def from_kream(j: dict) -> list[tuple[str, str]]:
 
 KREAM_NOTE: dict[str, dict] = {}   # 게시물 주소 → 작성자·태그된 상품 (manifest에 같이 저장 → 설명 쓸 때 참고)
 KINDS = {"page": from_page, "musinsa": from_musinsa, "arena": from_arena, "kream": from_kream}
+# 사장님이 조사하지 말라고 한 출처 (2026-09-27 "사진이 별로다"). 다시 허락받기 전엔 빼지 않음.
+BLOCKED = {"musinsa": "무신사 스냅", "kream": "KREAM 스타일"}   # Are.na는 사장님이 괜찮다고 해서 유지
 
 
 def run(jobs_path: Path) -> None:
@@ -157,6 +161,9 @@ def run(jobs_path: Path) -> None:
     man = load_json(MANIFEST, {})
     OUT.mkdir(parents=True, exist_ok=True)
     for j in load_json(jobs_path, []):
+        if j.get("kind") in BLOCKED:
+            print(f"{j['id']}: 건너뜀 — 사장님 지시로 조사하지 않는 출처({BLOCKED[j['kind']]})")
+            continue
         # 다른 job에서 이미 받은 사진은 건너뜀 (무신사는 주소가 달라도 같은 목록이 오는 경우가 있음)
         have = {(m["link"], m["img"].split("?")[0]) for m in man.values()}
         try:

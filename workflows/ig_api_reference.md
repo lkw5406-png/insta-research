@@ -23,23 +23,17 @@
    레더/필드 재킷 + 와이드 데님·슬랙스 레이어드, 저채도 톤에 레드·퍼플·머스타드 한 점. 화려한 쇼피스 제외).
 3. AI추천 탭에서 사장님이 **휴지통에 넣은 사진**(`python tools/ai_picks.py --list`)은 "싫은 방향"이므로 비슷한 건 고르지 않는다.
 
-## A. 웹에서 찾기 (잡지·룩북·런웨이 + 무신사 스냅 + Are.na) — `tools/web_cands.py`
-1. 후보 출처 정하기 → `.tmp/jobs.json` (형식은 `tools/web_cands.py` 맨 위). 종류 3가지:
-   - **잡지·룩북 (`page`)**: Hypebeast 기사(최근 기사 목록 `hypebeast.com/fashion`, `/fashion/page/2`…에서 lookbook·collection·street-style 기사),
+## A. 웹에서 찾기 (잡지·룩북·런웨이 + Are.na) — `tools/web_cands.py`
+🚫 **무신사 스냅·KREAM 스타일은 조사하지 않음** (2026-09-27 사장님: "사진이 별로다"). 도구도 이 두 곳은 막혀 있음.
+   (Are.na는 사장님이 "괜찮다"고 해서 계속 씀)
+   사장님이 다시 허락하기 전엔 쓰지 않고, 비슷한 일반인 후기·무드보드 사이트(29CM 후기, 핀터레스트 비슷한 곳 등)도 먼저 여쭤본 뒤에만.
+1. 후보 출처 정하기 → `.tmp/jobs.json` (형식은 `tools/web_cands.py` 맨 위, 종류는 `page`·`arena`):
+   - **잡지·룩북·런웨이**: Hypebeast 기사(최근 기사 목록 `hypebeast.com/fashion`, `/fashion/page/2`…에서 lookbook·collection·street-style 기사),
      브랜드 공식 룩북, Vogue Scandinavia 등. 잘 맞았던 곳: Graphpaper, Norse Projects, Uniqlo U, Carhartt WIP, Studio Nicholson,
-     Our Legacy, Sunflower, Prada 런웨이, JiyongKim. 화려한 스트릿 브랜드 룩북(Awake NY 등)은 거의 안 맞음.
-   - **무신사 스냅 (`musinsa`)**: 한국 일반인 착장. 목록 주소 `https://www.musinsa.com/snap/main/recommend?sort=NEWEST`(최신)·`?sort=POPULAR`(인기).
-     robots.txt가 'Claude-User'를 허용 → 사장님이 요청할 때만. 한 번에 약 36개이고 주소 뒤 조건(gender 등)을 바꿔도 같은 목록이 옴 →
-     새 스냅은 며칠 지나 다시 받을 때 생김(이미 받은 건 도구가 자동으로 건너뜀).
-     ⚠️ **"AI로 생성" 표시가 있는 사진은 절대 고르지 않음**(흰 배경 + MUSINSA 글자 사진에 많음. 왼쪽 아래 작은 표시 → 애매하면 크게 확인).
+     Our Legacy, Sunflower, Prada 런웨이, JiyongKim, 파리·도쿄 패션위크 스트릿 스냅 기사. 화려한 스트릿 브랜드 룩북(Awake NY 등)은 거의 안 맞음.
    - **Are.na (`arena`)**: 핀터레스트 비슷한 무드보드, 공식 API(키 불필요). `--arena-search 검색어`로 채널 찾기.
      잘 맞은 채널: `fit-pics-n_s2rve1iky`(Fit pics, 가장 좋음), `menswear-s4sdko_jurw`, `throwing-fits`, `menswear-ihx8m3zkipe`.
      흑백 화보·옛 잡지 스캔·아트 채널(예: `menswear-xlanwsjtlrs`, `menswear-media-system`, `workwear-lookbook`, `artist-fits`)은 안 맞음.
-   - **KREAM 스타일 (`kream`)**: 한국 착용 후기. 태그 페이지 `https://kream.co.kr/social/tags/태그` (한 태그당 최신 약 20개, 사람이 찍힌 게시물만).
-     robots.txt는 전부 허용(/my·/history·/bridge 제외). 서버가 'Claude-User' 이름엔 오류(500)를 줘서 브라우저 이름으로 접속 → 사장님 요청 때만.
-     잘 맞은 태그: `워크자켓`, `와이드데님`, `시티보이룩`, `레더자켓`. 안 맞음: `미니멀룩`(거의 전부 AI 사진), `레이어드룩`·`남자코디`(카드뉴스·광고 많음).
-     ⚠️ KREAM도 **"AI로 제작한 이미지"** 표시(사진 오른쪽 아래)가 있으면 제외. 글자 얹은 카드뉴스·상품 광고도 제외.
-     출처(source)는 `KREAM 스타일 #태그`, 링크는 게시물 주소.
 2. `uv run -q --with pillow python tools/web_cands.py --jobs .tmp/jobs.json` → `--sheet 앞글자들` → 판독 이미지(`.tmp/cands/sheets/`)를
    **하나씩 Read로 보고** 고른다. 고른 것만 크게 모아 한 번 더 보고 설명·키워드를 쓴다. 한 쇼의 연속 사진은 하나만.
 3. `.tmp/ai_add.json` 작성 (형식은 `tools/ai_picks.py` 맨 위, via: 룩북/런웨이/스트릿) →
@@ -91,6 +85,7 @@
 - Graph API 버전(v25.0)이 종료되면 `tools/ig_api.py`의 `GRAPH` 주소 버전을 올림.
 
 ## 변경 기록
+- 2026-09-27: 사장님 지시로 무신사 스냅·KREAM 조사 중단(사진 품질 불만). web_cands.py에서 두 종류 차단. Are.na는 유지.
 - 2026-09-27: KREAM 스타일 28장(AI-0150~0177, 태그 10개·후보 173장). web_cands.py에 kream 종류 추가. #미니멀룩은 AI 사진이라 제외.
 - 2026-09-27: 2차 99장(AI-0051~0149): 무신사 스냅 12, Are.na 40, 잡지·런웨이 13, 1차 후보 재선별 34(화려한 무늬 바지 2장은 제외).
   후보 수집 도구 tools/web_cands.py(잡지·무신사·Are.na) 추가. 무신사 'AI로 생성' 사진 제외 규칙. 인스타 연결은 페이스북 페이지에 인스타 연결이
