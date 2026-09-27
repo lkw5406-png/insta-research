@@ -7,6 +7,8 @@ Claude가 쓴 판정(패션 여부·출처 계정·자르기 범위·키워드)�
 - 목록(board)은 넣은 폴더로 정해짐: inbox/인스타그램, inbox/핀터레스트, inbox/런웨이 (inbox 바로 아래 파일은 인스타그램으로 봄).
 - 출처(source) 규칙 — 화면에 안 보이면 "확인 불가" + source_note에 이유. 추측으로 채우지 않음.
   인스타그램: 게시물 맨 위 계정 "@아이디" / 핀터레스트: 핀을 올린 계정 "@아이디" (+ 원래 사이트가 보이면 origin에 "musinsa.com" 등)
+    PC 핀 상세 화면은 아이디 대신 표시 이름만 보임 → 보이는 이름 그대로 "Yulia Korma" (@ 없이 = 프로필 링크 없이 이름만 표시).
+    PC 핀 상세 화면 캡처는 왼쪽 큰 사진만 사장님 핀. 오른쪽·아래 작은 사진은 핀터레스트 추천이라 자르지 않음.
   런웨이: "브랜드 시즌" (예: "Prada 2027SS", "Lemaire 2026FW") + 캡처한 사이트가 보이면 origin (예: "vogue.com")
 
 판정 파일 형식(.tmp/batchN.json):
@@ -216,6 +218,10 @@ def validate(lab: dict, v: dict, board: str = "instagram") -> list[str]:
     if board == "runway":
         if not (isinstance(src, str) and len(src.strip()) >= 3):
             errs.append('런웨이 source 는 "브랜드 시즌"(예: "Prada 2027SS") 또는 "확인 불가"')
+    elif board == "pinterest":
+        # 핀 상세 화면(PC)에는 아이디 대신 표시 이름만 보임 → 보이는 이름 그대로 (2026-09-27)
+        if not (isinstance(src, str) and src.strip() and src != "@"):
+            errs.append('핀터레스트 source 는 "@아이디", 보이는 표시 이름(예: "Yulia Korma") 또는 "확인 불가"')
     elif not (isinstance(src, str) and (src.startswith("@") and len(src) > 1 or src == "확인 불가")):
         errs.append('source 는 "@아이디" 또는 "확인 불가"')
     if src == "확인 불가" and not lab.get("source_note"):
